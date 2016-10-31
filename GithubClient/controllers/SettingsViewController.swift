@@ -11,7 +11,7 @@ import UIKit
 class SettingsViewController: UIViewController {
     public static let storyboardId = "com.orangemako.GithubClient.settingsViewController"
     public static let navigationTitle = "Settings"
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

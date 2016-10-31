@@ -22,6 +22,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     var searchBar = UISearchBar()
     var settingsViewController: SettingsViewController?
     
+    var repoList = [GithubRepo]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -48,6 +50,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     
     private func setupTableView() {
         tableView.delegate = self
+        //tableView.dataSource = repoList
     }
     
     private func setupSearchBar() {
@@ -124,9 +127,16 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
             GithubClient.logRequest(url: url)
 
             Alamofire.request(url).responseJSON() {
+                // NSHTTPURLResponse object
                 response in
 
-                // Parse
+                // response.result.value is a [String: Any] object
+                if let itemsResponse = (response.result.value as? [String: Any])?["items"] as? [[String: Any]] {
+                    for item in itemsResponse {
+                        let repo = GithubRepo(responseMap: item)
+                        self.repoList.append(repo)
+                    }
+                }
             }
         }
     }
