@@ -53,6 +53,24 @@
             </objects>
             <point key="canvasLocation" x="1080.8" y="138.98050974512745"/>
         </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="bbN-5W-LeU">
+            <objects>
+                <viewController storyboardIdentifier="com.orangemako.GithubClient.settingsViewController" id="8DN-Eb-M7U" customClass="SettingsViewController" customModule="GithubClient" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="cTf-54-ZM7"/>
+                        <viewControllerLayoutGuide type="bottom" id="fkS-Mn-3kg"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="FzD-a3-lbA">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TQ0-uV-9TL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1754" y="146"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="yyS-w6-YXh">
             <objects>
