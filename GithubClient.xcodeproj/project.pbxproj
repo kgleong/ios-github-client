@@ -14,6 +14,7 @@
 		9FB8AD811DC6D2800043EE11 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9FB8AD7F1DC6D2800043EE11 /* LaunchScreen.storyboard */; };
 		9FB8AD8B1DC6D64C0043EE11 /* RepoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB8AD8A1DC6D64C0043EE11 /* RepoListViewController.swift */; };
 		9FB8AD8E1DC6DBD00043EE11 /* RepoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB8AD8D1DC6DBD00043EE11 /* RepoTableViewCell.swift */; };
+		9FB8AD911DC6DDEC0043EE11 /* GithubClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB8AD901DC6DDEC0043EE11 /* GithubClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		9FB8AD821DC6D2800043EE11 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FB8AD8A1DC6D64C0043EE11 /* RepoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RepoListViewController.swift; path = controllers/RepoListViewController.swift; sourceTree = "<group>"; };
 		9FB8AD8D1DC6DBD00043EE11 /* RepoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RepoTableViewCell.swift; path = views/RepoTableViewCell.swift; sourceTree = "<group>"; };
+		9FB8AD901DC6DDEC0043EE11 /* GithubClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GithubClient.swift; path = clients/GithubClient.swift; sourceTree = "<group>"; };
 		EFE8694635E9B28E5540098F /* Pods-GithubClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubClient.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GithubClient/Pods-GithubClient.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,6 +65,7 @@
 		9FB8AD751DC6D2800043EE11 /* GithubClient */ = {
 			isa = PBXGroup;
 			children = (
+				9FB8AD921DC6DDF20043EE11 /* clients */,
 				9FB8AD8C1DC6D65D0043EE11 /* controllers */,
 				9FB8AD8F1DC6DBDC0043EE11 /* views */,
 				9FB8AD761DC6D2800043EE11 /* AppDelegate.swift */,
@@ -88,6 +91,14 @@
 				9FB8AD8D1DC6DBD00043EE11 /* RepoTableViewCell.swift */,
 			);
 			name = views;
+			sourceTree = "<group>";
+		};
+		9FB8AD921DC6DDF20043EE11 /* clients */ = {
+			isa = PBXGroup;
+			children = (
+				9FB8AD901DC6DDEC0043EE11 /* GithubClient.swift */,
+			);
+			name = clients;
 			sourceTree = "<group>";
 		};
 		A70B3C95D55957F9A33D6F8D /* Frameworks */ = {
@@ -143,6 +154,7 @@
 					9FB8AD721DC6D2800043EE11 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = K7J25DP2KC;
+						LastSwiftMigration = 0810;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -234,6 +246,7 @@
 				9FB8AD8B1DC6D64C0043EE11 /* RepoListViewController.swift in Sources */,
 				9FB8AD771DC6D2800043EE11 /* AppDelegate.swift in Sources */,
 				9FB8AD8E1DC6DBD00043EE11 /* RepoTableViewCell.swift in Sources */,
+				9FB8AD911DC6DDEC0043EE11 /* GithubClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,33 +7,49 @@
 //
 
 import UIKit
+import Alamofire
 
-class RepoListViewController: UIViewController {
+class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBarDelegate {
     
-    let navigationTitle = "Repos"
+    let controllerTitle = "Repos"
 
     @IBOutlet weak var tableView: UITableView!
+    
+    var searchTerms = [String]()
+    var queryMap = [String: String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = navigationTitle
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        title = controllerTitle
+        
+        // TODO: remove. for development purposes only.
+        searchTerms.append("omako")
+        
+        getRepos()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
-    */
+    
+    // MARK: - Search Repos
+    
+    private func getRepos() {
+        if !searchTerms.isEmpty || !queryMap.isEmpty {
+            searchRepos(searchTerms: searchTerms, queryMap: queryMap)
+        }
+    }
+    
+    private func searchRepos(searchTerms: [String]?, queryMap: [String: String]?) {
+        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, queryMap: queryMap) {
+            GithubClient.logRequest(url: url)
 
+            Alamofire.request(url).responseJSON() {
+                response in
+
+                // Parse
+            }
+        }
+    }
 }
