@@ -17,6 +17,13 @@ class GithubClient {
     
     static let searchQueryParamKey = "q"
     static let querySeparator = " "
+
+    static let sortQueryParamKey = "sort"
+    static let sortSeparator = "="
+    
+    // Search API query param keys
+    static let stars = "stars"
+    static let language = "language"
     
     // MARK: - Build Request
     
@@ -24,7 +31,7 @@ class GithubClient {
         Sample search request:
         `https://api.github.com/search/repositories?q=ios views user:kgleong language:swift language:objective-c stars:>=50`
     */
-    class func createSearchReposUrl(searchTerms: [String]?, queryMap: [String: String]?) -> URL? {
+    class func createSearchReposUrl(searchTerms: [String]?, queryMap: [String: String]?, sort: String?) -> URL? {
         var queryStrings = [String]()
         
         if let searchTerms = searchTerms {
@@ -36,13 +43,40 @@ class GithubClient {
                 queryStrings.append("\(key):\(value)")
             }
         }
-
-        let queryItem = URLQueryItem(
-            name: searchQueryParamKey,
-            value: queryStrings.joined(separator: querySeparator)
-        )
         
-        return createUrl(path: searchReposPath, queryParams: [queryItem])
+        var queryItems = [URLQueryItem]()
+        
+        if let sort = sort {
+            queryItems.append(
+                URLQueryItem(name: sortQueryParamKey, value: sort)
+            )
+        }
+        else {
+            // Default to DESC star sort
+            queryItems.append(
+                URLQueryItem(name: sortQueryParamKey, value: stars)
+            )
+        }
+        
+        if queryStrings.isEmpty {
+            // Default to high star count
+            queryItems.append(
+                URLQueryItem(
+                    name: searchQueryParamKey,
+                    value: "\(stars):>10000"
+                )
+            )
+        }
+        else {
+            queryItems.append(
+                URLQueryItem(
+                    name: searchQueryParamKey,
+                    value: queryStrings.joined(separator: querySeparator)
+                )
+            )
+        }
+        
+        return createUrl(path: searchReposPath, queryParams: queryItems)
     }
     
     class func createUrl(path: String, queryParams: [URLQueryItem]?) -> URL? {

@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 
-class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBarDelegate {
+class RepoListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let searchBarPlaceholder = "Enter keywords"
     let navigationTitle = "Repos"
     let settingsSegueId = "com.orangemako.GithubClient.settingsSegue"
@@ -28,10 +28,6 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
         super.viewDidLoad()
 
         setupViews()
-        
-        // TODO: remove. for development purposes only.
-        searchTerms.append("omako")
-
         getRepos()
     }
     
@@ -43,6 +39,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     private func setupViews() {
         title = navigationTitle
         
+        setupTableView()
         setupSearchBar()
         setupNavigationBar()
         setupSettings()
@@ -50,7 +47,9 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     
     private func setupTableView() {
         tableView.delegate = self
-        //tableView.dataSource = repoList
+        tableView.dataSource = self
+
+        automaticallyAdjustsScrollViewInsets = false
     }
     
     private func setupSearchBar() {
@@ -69,9 +68,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     }
     
     private func setupNavigationBar() {
-        let topNavigationItem = navigationController?.navigationBar.topItem
-        
-        topNavigationItem?.leftBarButtonItem =
+        navigationItem.leftBarButtonItem =
             UIBarButtonItem(
                 title: SettingsViewController.navigationTitle,
                 style: .plain,
@@ -79,7 +76,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
                 action: #selector(RepoListViewController.displaySettings)
             )
         
-        topNavigationItem?.titleView = searchBar
+        navigationItem.titleView = searchBar
     }
     
     // MARK: UI Target Actions
@@ -88,6 +85,16 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
         if let settingsViewController = settingsViewController {
             navigationController?.pushViewController(settingsViewController, animated: true)
         }
+    }
+    
+    // MARK: - UITableView Methods
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return repoList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
     }
     
     // MARK: - UISearchBarDelegate
@@ -123,7 +130,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UISearchBar
     }
     
     private func searchRepos(searchTerms: [String]?, queryMap: [String: String]?) {
-        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, queryMap: queryMap) {
+        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, queryMap: queryMap, sort: nil) {
             GithubClient.logRequest(url: url)
 
             Alamofire.request(url).responseJSON() {
