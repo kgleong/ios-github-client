@@ -18,9 +18,23 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     var saveButtonItem: UIBarButtonItem?
     var cancelButtonItem: UIBarButtonItem?
     
-    let sectionHeaderTextList = ["Rating", "Language"]
+    static let ratingSectionTitle = "Rating"
+    static let languageSectionTitle = "Language"
+    static let sectionHeaderTextList = [ratingSectionTitle, languageSectionTitle]
+    static let languages = ["Swift", "Java", "Ruby", "Go", "Python", "C", "C++"]
+    
+    var displayedLanguages = [String]()
+    var languageToggleIsOn = true
     
     @IBOutlet weak var tableView: UITableView!
+    
+    override func loadView() {
+        if languageToggleIsOn {
+            displayedLanguages = SettingsViewController.languages
+        }
+        
+        super.loadView()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,24 +76,54 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     // MARK: - UITableViewDelegate Protocol
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
+
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionHeaderTextList.count
+        return SettingsViewController.sectionHeaderTextList.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionHeaderTextList[section]
+        return SettingsViewController.sectionHeaderTextList[section]
     }
     
+    /*
+        Required protocol method.
+    */
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        var numRows = 1
+        
+        if(SettingsViewController.sectionHeaderTextList[section] == SettingsViewController.languageSectionTitle) {
+            numRows = displayedLanguages.count + 1
+        }
+        
+        return numRows
+    }
+    
+    /*
+        Required protocol method.
+     */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell: UITableViewCell?
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsMinStarCountTableViewCell") as! SettingsMinStarCountTableViewCell
+        if(SettingsViewController.sectionHeaderTextList[indexPath.section] == SettingsViewController.ratingSectionTitle) {
+            cell = tableView.dequeueReusableCell(withIdentifier: "SettingsMinStarCountTableViewCell")
+        }
+        else {
+            if(indexPath.row == 0) {
+                let languageToggleCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageToggleTableViewCell") as! SettingsLanguageToggleTableViewCell
+                languageToggleCell.languageSwitch.addTarget(self, action: #selector(SettingsViewController.onLanguageToggle(sender:)), for: UIControlEvents.touchUpInside)
+                
+                cell = languageToggleCell
+            }
+            else {
+                let languageCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageTableViewCell") as! SettingsLanguageTableViewCell
+                languageCell.languageLabel.text = displayedLanguages[indexPath.row - 1]
+                
+                cell = languageCell
+            }
+        }
         
-        return cell
+        return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -98,5 +142,15 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         // Need to assign return value to avoid warning
         // http://stackoverflow.com/questions/37843049/xcode-8-swift-3-expression-of-type-uiviewcontroller-is-unused-warning
         _ = navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func onLanguageToggle(sender: UISwitch) {
+        if sender.isOn {
+            displayedLanguages = SettingsViewController.languages
+        }
+        else {
+            displayedLanguages.removeAll()
+        }
+        tableView.reloadData()
     }
 }
