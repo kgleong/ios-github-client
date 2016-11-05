@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol SettingsMinStartCountTableViewCellDelegate: class {
+    func onMinStarCountChange(sender: SettingsMinStarCountTableViewCell)
+}
+
 class SettingsMinStarCountTableViewCell: UITableViewCell {
 
     @IBOutlet weak var slider: UISlider!
@@ -18,19 +22,29 @@ class SettingsMinStarCountTableViewCell: UITableViewCell {
     let descriptionText = "Min Stars"
     let maxMinStars = 5000
     
-    var desiredMinStars = 0
+    weak var delegate: SettingsMinStartCountTableViewCellDelegate?
     
+    var desiredMinStars: Int?
+    var savedMinStars: Int?
     
     override func awakeFromNib() {
-        super.awakeFromNib()
-        
         setupViews()
+        super.awakeFromNib()
     }
     
     // MARK: - Target Actions
     
     @IBAction func onSliderChanged(_ sender: UISlider) {
         desiredMinStars = Int((sender.value * Float(maxMinStars)).rounded())
+        setMinStarCountLabel()
+        delegate?.onMinStarCountChange(sender: self)
+    }
+    
+    // MARK: - External Modifiers
+    
+    func setMinStars(count: Int) {
+        desiredMinStars = count
+        slider.setValue(Float(count) / Float(maxMinStars), animated: true)
         setMinStarCountLabel()
     }
     
@@ -39,11 +53,16 @@ class SettingsMinStarCountTableViewCell: UITableViewCell {
     private func setupViews() {
         descriptionLabel.text = descriptionText
         setMinStarCountLabel()
-        slider.value = Float(desiredMinStars) / Float(maxMinStars)
+        
+        slider.value = Float(displayStarCount()) / Float(maxMinStars)
     }
     
     private func setMinStarCountLabel() {
-        minStarCountLabel.text = "\(desiredMinStars)"
+        minStarCountLabel.text = "\(displayStarCount())"
+    }
+    
+    private func displayStarCount() -> Int {
+        return desiredMinStars ?? 0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

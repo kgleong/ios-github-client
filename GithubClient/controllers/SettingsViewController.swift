@@ -8,9 +8,9 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class SettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SettingsMinStartCountTableViewCellDelegate {
     public static let storyboardId = "com.orangemako.GithubClient.settingsViewController"
-    public static let navigationTitle = "Settings"
+    public static let navigationTitle = "Filters"
     
     let saveButtonTitle = "Save"
     let cancelButtonTitle = "Cancel"
@@ -21,18 +21,23 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     static let ratingSectionTitle = "Rating"
     static let languageSectionTitle = "Language"
     static let sectionHeaderTextList = [ratingSectionTitle, languageSectionTitle]
-    static let languages = ["Swift", "Java", "Ruby", "Go", "Python", "C", "C++"]
+    static let languages: Set<String> = ["Swift", "Java", "Ruby", "Go", "Python", "C", "C++"]
     
     var displayedLanguages = [String]()
     var languageToggleIsOn = true
     
+    // User preferences
+    let searchByLanguageEnabledKey = "searchByLanguage"
+    let selectedLanguagesKey = "selectedLanguages"
+    let minStarsKey = "minStars"
+    
+    var selectedLanguages: Set<String>?
+    var searchByLanguageEnabled: Bool?
+    var minStars: Int?
+    
     @IBOutlet weak var tableView: UITableView!
     
     override func loadView() {
-        if languageToggleIsOn {
-            displayedLanguages = SettingsViewController.languages
-        }
-        
         super.loadView()
     }
     
@@ -42,8 +47,35 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         title = SettingsViewController.navigationTitle
         
         setupViews()
+        loadPreferences()
+
+        if let searchByLanguageEnabled = searchByLanguageEnabled {
+            if(searchByLanguageEnabled) {
+                displayedLanguages = Array(SettingsViewController.languages)
+            }
+        }
     }
 
+    // MARK: User Preferences
+    
+    private func loadPreferences() {
+        let userDefaults = UserDefaults.standard
+        
+        minStars = userDefaults.value(forKey: minStarsKey) as? Int ?? 0
+        selectedLanguages = userDefaults.value(forKey: selectedLanguagesKey) as? Set<String>
+        searchByLanguageEnabled = userDefaults.value(forKey: searchByLanguageEnabledKey) as? Bool ?? false
+    }
+    
+    private func savePreferences() {
+        let userDefaults = UserDefaults.standard
+
+        userDefaults.set(minStars, forKey: minStarsKey)
+        userDefaults.set(selectedLanguages, forKey: selectedLanguagesKey)
+        userDefaults.set(searchByLanguageEnabled, forKey: selectedLanguagesKey)
+    }
+    
+    // MARK: Setup Views
+    
     private func setupViews() {
         setupTableView()
         setupNavigationBar()
@@ -106,7 +138,15 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         var cell: UITableViewCell?
         
         if(SettingsViewController.sectionHeaderTextList[indexPath.section] == SettingsViewController.ratingSectionTitle) {
-            cell = tableView.dequeueReusableCell(withIdentifier: "SettingsMinStarCountTableViewCell")
+            let minStarsCell = tableView.dequeueReusableCell(withIdentifier: "SettingsMinStarCountTableViewCell") as! SettingsMinStarCountTableViewCell
+            minStarsCell.savedMinStars = minStars
+            minStarsCell.delegate = self
+            
+            if(minStarsCell.desiredMinStars == nil) {
+                minStarsCell.setMinStars(count: minStars!)
+            }
+            
+            cell = minStarsCell
         }
         else {
             if(indexPath.row == 0) {
@@ -119,6 +159,17 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let languageCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageTableViewCell") as! SettingsLanguageTableViewCell
                 languageCell.languageLabel.text = displayedLanguages[indexPath.row - 1]
                 
+                if indexPath.row % 2 == 1 {
+                    // Light gray
+                    languageCell.backgroundColor =
+                        UIColor(
+                            red: 0.95,
+                            green: 0.95,
+                            blue: 0.95,
+                            alpha: 1.0
+                        )
+                }
+
                 cell = languageCell
             }
         }
@@ -127,30 +178,52 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("selected")
+        // Check or un-check languages
+        if let cell = tableView.cellForRow(at: indexPath) as? SettingsLanguageTableViewCell {
+            if (cell.accessoryType == UITableViewCellAccessoryType.checkmark) {
+                cell.accessoryType = UITableViewCellAccessoryType.none
+            }
+            else {
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            }
+        }
     }
     
     // MARK: - Target Actions
     
     @objc private func saveSettings() {
         print("saving settings")
+        
+        savePreferences()
+        dismiss()
     }
     
     @objc private func cancelSettings() {
         print("no changes made to settings")
-        
-        // Need to assign return value to avoid warning
-        // http://stackoverflow.com/questions/37843049/xcode-8-swift-3-expression-of-type-uiviewcontroller-is-unused-warning
-        _ = navigationController?.popViewController(animated: true)
+        dismiss()
     }
     
     @objc private func onLanguageToggle(sender: UISwitch) {
         if sender.isOn {
-            displayedLanguages = SettingsViewController.languages
+            displayedLanguages = Array(SettingsViewController.languages)
         }
         else {
             displayedLanguages.removeAll()
         }
         tableView.reloadData()
+    }
+    
+    // MARK: - SettingsMinStartCountTableViewCellDelegate
+    
+    func onMinStarCountChange(sender: SettingsMinStarCountTableViewCell) {
+        minStars = sender.desiredMinStars
+    }
+    
+    // MARK: - Navigation
+    
+    private func dismiss() {
+        // Need to assign return value to avoid warning
+        // http://stackoverflow.com/questions/37843049/xcode-8-swift-3-expression-of-type-uiviewcontroller-is-unused-warning
+        _ = navigationController?.popViewController(animated: true)
     }
 }
