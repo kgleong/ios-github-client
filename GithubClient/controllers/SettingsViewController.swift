@@ -24,7 +24,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     static let languages: Set<String> = ["Swift", "Java", "Ruby", "Go", "Python", "C", "C++"]
     
     var displayedLanguages = [String]()
-    var languageToggleIsOn = true
     
     // User preferences
     let searchByLanguageEnabledKey = "searchByLanguage"
@@ -62,7 +61,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         let userDefaults = UserDefaults.standard
         
         minStars = userDefaults.value(forKey: minStarsKey) as? Int ?? 0
-        selectedLanguages = userDefaults.value(forKey: selectedLanguagesKey) as? Set<String>
+        
+        // Sets are not eligible for storage in UserDefaults
+        let selectedLanguagesArray = userDefaults.value(forKey: selectedLanguagesKey) as? [String] ?? [String]()
+        selectedLanguages = Set(selectedLanguagesArray)
+        
         searchByLanguageEnabled = userDefaults.value(forKey: searchByLanguageEnabledKey) as? Bool ?? false
     }
     
@@ -70,8 +73,8 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         let userDefaults = UserDefaults.standard
 
         userDefaults.set(minStars, forKey: minStarsKey)
-        userDefaults.set(selectedLanguages, forKey: selectedLanguagesKey)
-        userDefaults.set(searchByLanguageEnabled, forKey: selectedLanguagesKey)
+        userDefaults.set(Array(selectedLanguages!), forKey: selectedLanguagesKey)
+        userDefaults.set(searchByLanguageEnabled, forKey: searchByLanguageEnabledKey)
     }
     
     // MARK: Setup Views
@@ -150,14 +153,36 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         else {
             if(indexPath.row == 0) {
+                // Filter by language cell.
                 let languageToggleCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageToggleTableViewCell") as! SettingsLanguageToggleTableViewCell
+                
+                // Trigger showing or hiding of languages and setting the preference value.
                 languageToggleCell.languageSwitch.addTarget(self, action: #selector(SettingsViewController.onLanguageToggle(sender:)), for: UIControlEvents.touchUpInside)
+                
+                languageToggleCell.languageSwitch.setOn(searchByLanguageEnabled!, animated: false)
+                
+                //showOrHideLanguages(showLanguages: searchByLanguageEnabled!)
                 
                 cell = languageToggleCell
             }
             else {
-                let languageCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageTableViewCell") as! SettingsLanguageTableViewCell
-                languageCell.languageLabel.text = displayedLanguages[indexPath.row - 1]
+                // Specific language cells.
+                let languageCell =
+                    tableView.dequeueReusableCell(
+                        withIdentifier: "SettingsLanguageTableViewCell"
+                    ) as! SettingsLanguageTableViewCell
+                
+                let language = displayedLanguages[indexPath.row - 1]
+                languageCell.languageLabel.text = language
+            
+                if let selectedLanguages = selectedLanguages {
+                    if(selectedLanguages.contains(language)) {
+                        languageCell.accessoryType = UITableViewCellAccessoryType.checkmark
+                    }
+                    else {
+                        languageCell.accessoryType = UITableViewCellAccessoryType.none
+                    }
+                }
                 
                 if indexPath.row % 2 == 1 {
                     // Light gray
@@ -180,13 +205,19 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Check or un-check languages
         if let cell = tableView.cellForRow(at: indexPath) as? SettingsLanguageTableViewCell {
+            let language = cell.languageLabel.text
+            
             if (cell.accessoryType == UITableViewCellAccessoryType.checkmark) {
                 cell.accessoryType = UITableViewCellAccessoryType.none
+                _ = selectedLanguages?.remove(language!)
             }
             else {
                 cell.accessoryType = UITableViewCellAccessoryType.checkmark
+                selectedLanguages?.insert(language!)
             }
         }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     // MARK: - Target Actions
@@ -204,13 +235,38 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     @objc private func onLanguageToggle(sender: UISwitch) {
-        if sender.isOn {
+        showOrHideLanguages(showLanguages: sender.isOn)
+    }
+    
+    private func showOrHideLanguages(showLanguages: Bool) {
+        var indexPaths = [IndexPath]()
+        
+        for i in 1...SettingsViewController.languages.count {
+            indexPaths.append(IndexPath(row: i, section: 1))
+        }
+        
+        if showLanguages {
+            // Show languages
             displayedLanguages = Array(SettingsViewController.languages)
+            tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+            
+            // Set preference
+            searchByLanguageEnabled = true
         }
         else {
+            // Hide languages
             displayedLanguages.removeAll()
+            
+            if(tableView.numberOfRows(inSection: 1) > 1) {
+                tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.top)
+            }
+            else {
+                tableView.reloadData()
+            }
+            
+            // Set preference
+            searchByLanguageEnabled = false
         }
-        tableView.reloadData()
     }
     
     // MARK: - SettingsMinStartCountTableViewCellDelegate
