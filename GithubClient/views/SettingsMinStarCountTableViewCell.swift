@@ -13,9 +13,7 @@ protocol SettingsMinStartCountTableViewCellDelegate: class {
 }
 
 class SettingsMinStarCountTableViewCell: UITableViewCell {
-
     @IBOutlet weak var slider: UISlider!
-    
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var minStarCountLabel: UILabel!
     
@@ -25,13 +23,30 @@ class SettingsMinStarCountTableViewCell: UITableViewCell {
     weak var delegate: SettingsMinStartCountTableViewCellDelegate?
     
     var desiredMinStars: Int?
-    var savedMinStars: Int?
-    
+
     override func awakeFromNib() {
-        setupViews()
         super.awakeFromNib()
+
+        setupViews()
     }
-    
+
+    // MARK: - View Setup
+
+    private func setupViews() {
+        descriptionLabel.text = descriptionText
+        setMinStarCountLabel()
+
+        slider.value = Float(displayStarCount()) / Float(maxMinStars)
+    }
+
+    private func setMinStarCountLabel() {
+        minStarCountLabel.text = "\(displayStarCount())"
+    }
+
+    private func displayStarCount() -> Int {
+        return desiredMinStars ?? 0
+    }
+
     // MARK: - Target Actions
     
     @IBAction func onSliderChanged(_ sender: UISlider) {
@@ -39,36 +54,12 @@ class SettingsMinStarCountTableViewCell: UITableViewCell {
         setMinStarCountLabel()
         delegate?.onMinStarCountChange(sender: self)
     }
-    
+
     // MARK: - External Modifiers
-    
-    func setMinStars(count: Int) {
-        desiredMinStars = count
-        slider.setValue(Float(count) / Float(maxMinStars), animated: true)
+
+    func setMinStars(minStars: Int) {
+        desiredMinStars = minStars
+        slider.setValue(Float(minStars) / Float(maxMinStars), animated: true)
         setMinStarCountLabel()
     }
-    
-    // MARK: - View Setup
-    
-    private func setupViews() {
-        descriptionLabel.text = descriptionText
-        setMinStarCountLabel()
-        
-        slider.value = Float(displayStarCount()) / Float(maxMinStars)
-    }
-    
-    private func setMinStarCountLabel() {
-        minStarCountLabel.text = "\(displayStarCount())"
-    }
-    
-    private func displayStarCount() -> Int {
-        return desiredMinStars ?? 0
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }

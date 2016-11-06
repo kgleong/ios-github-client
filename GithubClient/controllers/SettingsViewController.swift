@@ -25,6 +25,8 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     let languageSectionTitle = "Language"
     lazy var sectionHeaderTextList: [String] = [self.ratingSectionTitle, self.languageSectionTitle]
 
+    let numLanguageSettingRows = 1
+
     // Languages
     let defaultLanguages: Set<String> = [
         "Swift", "Java", "Ruby", "Go", "Python", "C", "C++"
@@ -79,6 +81,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         userDefaults.set(minStars, forKey: minStarsKey)
         userDefaults.set(Array(selectedLanguages!), forKey: selectedLanguagesKey)
         userDefaults.set(searchByLanguageEnabled, forKey: searchByLanguageEnabledKey)
+
+        print("Saving User Defaults.")
+        print("\tminStars: \(minStars!)")
+        print("\tselectedLanguages: \(selectedLanguages!)")
+        print("\tsearchByLanguageEnabled: \(searchByLanguageEnabled!)")
     }
 
     // MARK: Setup Views
@@ -154,69 +161,84 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         Required protocol method.
      */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell: UITableViewCell?
-
         // Min star rating
         if(sectionHeaderTextList[indexPath.section] == ratingSectionTitle) {
-            let minStarsCell = tableView.dequeueReusableCell(withIdentifier: "SettingsMinStarCountTableViewCell") as! SettingsMinStarCountTableViewCell
-            minStarsCell.savedMinStars = minStars
-            minStarsCell.delegate = self
-
-            if(minStarsCell.desiredMinStars == nil) {
-                minStarsCell.setMinStars(count: minStars!)
-            }
-
-            cell = minStarsCell
+            return minStarTableViewCell()
         }
         // Languages filter
         else {
+            // First row is the language toggle
             if(indexPath.row == 0) {
-                // Filter by language cell.
-                let languageToggleCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageToggleTableViewCell") as! SettingsLanguageToggleTableViewCell
-
-                // Trigger showing or hiding of languages and setting the preference value.
-                languageToggleCell.languageSwitch.addTarget(self, action: #selector(SettingsViewController.onLanguageToggle(sender:)), for: UIControlEvents.touchUpInside)
-
-                // Set the toggle to the correct value based on the user preference value
-                languageToggleCell.languageSwitch.setOn(searchByLanguageEnabled!, animated: false)
-
-                cell = languageToggleCell
+                return languageToggleCell()
             }
             else {
-                // Specific language cells.
-                let languageCell =
-                    tableView.dequeueReusableCell(
-                        withIdentifier: "SettingsLanguageTableViewCell"
-                    ) as! SettingsLanguageTableViewCell
+                return languageCell(indexPath: indexPath)
+            }
+        }
+    }
 
-                let language = displayedLanguages[indexPath.row - 1]
-                languageCell.languageLabel.text = language
+    private func minStarTableViewCell() -> SettingsMinStarCountTableViewCell {
+        let minStarsCell =
+            tableView.dequeueReusableCell(
+                withIdentifier: "SettingsMinStarCountTableViewCell"
+            ) as! SettingsMinStarCountTableViewCell
 
-                if let selectedLanguages = selectedLanguages {
-                    if(selectedLanguages.contains(language)) {
-                        languageCell.accessoryType = UITableViewCellAccessoryType.checkmark
-                    }
-                    else {
-                        languageCell.accessoryType = UITableViewCellAccessoryType.none
-                    }
-                }
+        // Allow updating of minStars from the cell
+        minStarsCell.delegate = self
 
-                if indexPath.row % 2 == 1 {
-                    // Light gray
-                    languageCell.backgroundColor =
-                        UIColor(
-                            red: 0.95,
-                            green: 0.95,
-                            blue: 0.95,
-                            alpha: 1.0
-                        )
-                }
+        minStarsCell.setMinStars(minStars: minStars!)
 
-                cell = languageCell
+        return minStarsCell
+    }
+
+    private func languageToggleCell() -> SettingsLanguageToggleTableViewCell {
+        // Filter by language cell.
+        let languageToggleCell = tableView.dequeueReusableCell(withIdentifier: "SettingsLanguageToggleTableViewCell") as! SettingsLanguageToggleTableViewCell
+
+        // Trigger showing or hiding of languages and setting the preference value.
+        languageToggleCell.languageSwitch.addTarget(self, action: #selector(SettingsViewController.onLanguageToggle(sender:)), for: UIControlEvents.touchUpInside)
+
+        // Set the toggle to the correct value based on the user preference value
+        languageToggleCell.languageSwitch.setOn(searchByLanguageEnabled!, animated: false)
+        showOrHideLanguages(showLanguages: languageToggleCell.languageSwitch.isOn)
+
+        return languageToggleCell
+    }
+
+    private func languageCell(indexPath: IndexPath) -> SettingsLanguageTableViewCell {
+        // Specific language cells.
+        let languageCell =
+            tableView.dequeueReusableCell(
+                withIdentifier: "SettingsLanguageTableViewCell"
+                ) as! SettingsLanguageTableViewCell
+
+        // Set label text
+        let language = displayedLanguages[indexPath.row - 1] // First row is the toggle
+        languageCell.languageLabel.text = language
+
+        // Use user preferences to check/uncheck language
+        if let selectedLanguages = selectedLanguages {
+            if(selectedLanguages.contains(language)) {
+                languageCell.accessoryType = UITableViewCellAccessoryType.checkmark
+            }
+            else {
+                languageCell.accessoryType = UITableViewCellAccessoryType.none
             }
         }
 
-        return cell!
+        // Alternate row coloring
+        if indexPath.row % 2 == 1 {
+            // Light gray
+            languageCell.backgroundColor =
+                UIColor(
+                    red: 0.95,
+                    green: 0.95,
+                    blue: 0.95,
+                    alpha: 1.0
+            )
+        }
+
+        return languageCell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -240,14 +262,17 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - Target Actions
 
     @objc private func saveSettings() {
-        print("saving settings")
-
+        print("Save button tapped")
         savePreferences()
         dismiss()
     }
 
     @objc private func cancelSettings() {
-        print("no changes made to settings")
+        print("Cancel button tapped")
+
+        // Clear and reload filters from preferences
+        loadPreferences()
+
         dismiss()
     }
 
@@ -268,36 +293,35 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         // Create IndexPath objects for each row in the languages section.
         var indexPaths = [IndexPath]()
 
-        guard let sectionIndex = sectionHeaderTextList.index(of: languageSectionTitle) else {
+        guard let languagesSectionIndex = sectionHeaderTextList.index(of: languageSectionTitle) else {
             print("Error: No language section")
             return
         }
 
         // Exclude the first row, which is the language filter toggle.
         for i in 1...allLanguagesArray().count {
-            indexPaths.append(IndexPath(row: i, section: sectionIndex))
+            indexPaths.append(IndexPath(row: i, section: languagesSectionIndex))
         }
 
         if showLanguages {
             // Show languages
             displayedLanguages = allLanguagesArray()
-            tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+
+            if tableView.numberOfRows(inSection: languagesSectionIndex) == numLanguageSettingRows {
+                tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+            }
 
             // Set preference
             searchByLanguageEnabled = true
         }
-        else {
+        // Only hide languages if they're visible.
+        else if(tableView.numberOfRows(inSection: languagesSectionIndex) > numLanguageSettingRows){
             // Hide languages
             displayedLanguages.removeAll()
 
-            // Animate language hiding if languages are currently displayed.  Otherwise,
-            // reload table view data without animating.
-            if(tableView.numberOfRows(inSection: sectionIndex) > 1) {
-                tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.top)
-            }
-            else {
-                tableView.reloadData()
-            }
+            // Remove language rows from table with animation
+            tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.top)
+            tableView.reloadData()
 
             // Set preference
             searchByLanguageEnabled = false

@@ -83,6 +83,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc private func displaySettings() {
         if let settingsViewController = settingsViewController {
+            settingsViewController.tableView?.reloadData()
             navigationController?.pushViewController(settingsViewController, animated: true)
         }
     }
