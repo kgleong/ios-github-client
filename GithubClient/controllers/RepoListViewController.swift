@@ -21,8 +21,12 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     
     var searchBar = UISearchBar()
     var settingsViewController: SettingsViewController?
-    
+
+    // All fetched repos
     var repoList = [GithubRepo]()
+
+    // Repos displayed in the table view.
+    var displayRepoList = [GithubRepo]()
 
     // MARK: - ViewController overrides
 
@@ -37,11 +41,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        repoList.removeAll()
-        getRepos()
+        refreshRepos()
     }
     
     // MARK: - Setup Views
+
     private func setupViews() {
         title = navigationTitle
         
@@ -97,19 +101,52 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - UITableView Methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repoList.count
+        return displayRepoList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RepoTableViewCell") as! RepoTableViewCell
 
-        cell.nameLabel.text = repoList[indexPath.row].name
+        cell.nameLabel.text = displayRepoList[indexPath.row].name
 
         return cell
     }
     
     // MARK: - UISearchBarDelegate
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        guard (searchText.characters.count > 0) else {
+            refreshRepos()
+            return
+        }
+
+        do {
+            displayRepoList = try repoList.filter() {
+                (repo: GithubRepo) throws -> Bool
+                in
+                let regex = try NSRegularExpression(pattern: "\(searchText)", options: [NSRegularExpression.Options.caseInsensitive])
+
+                guard let name = repo.name else {
+                    return false
+                }
+
+                // Options: NSRegularExpression.MatchingOptions
+                let numMatches = regex.numberOfMatches(in: name, options: [], range: NSRange(location: 0, length: name.characters.count))
+
+                if(numMatches > 0) {
+                    return true
+                }
+                else {
+                    return false
+                }
+            }
+        }
+        catch {
+            // NSRegularExpression error
+            print("\(error)")
+        }
+        tableView.reloadData()
+    }
+
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
     }
@@ -117,6 +154,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.showsCancelButton = false
+        displayRepoList = repoList
         searchBar.endEditing(true)
     }
     
@@ -128,6 +166,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         if let searchBarText = searchBar.text {
             if searchBarText.characters.count > 0 {
                 searchTerms = searchBarText.components(separatedBy: " ")
+
+                refreshRepos()
             }
         }
     }
@@ -145,6 +185,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
         if let searchByLanguageEnabled = preferences.value(forKey: SettingsViewController.searchByLanguageEnabledKey) as? Bool {
             if(searchByLanguageEnabled) {
+                // Only add language filters if the language filter toggle is enabled.
                 if let languages = preferences.value(forKey: SettingsViewController.selectedLanguagesKey) as? [String] {
                     for language in languages {
                         rawQueryParams.append(
@@ -161,6 +202,12 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     // MARK: - Search Repos
+
+    private func refreshRepos() {
+        repoList.removeAll()
+        displayRepoList = repoList
+        getRepos()
+    }
     
     private func getRepos() {
         loadPreferencesIntoQueryMap()
@@ -186,6 +233,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                     }
                 }
 
+                self.displayRepoList = self.repoList
                 self.tableView.reloadData()
             }
         }
