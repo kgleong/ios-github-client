@@ -23,7 +23,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     // Section header text
     let ratingSectionTitle = "Rating"
     let languageSectionTitle = "Language"
-    lazy var sectionHeaderTextList: [String] = [self.ratingSectionTitle, self.languageSectionTitle]
+
+    // Lazy loaded variable allows `self` to be instantiated
+    // before assignment.
+    lazy var sectionHeaderTextList: [String] =
+        [self.ratingSectionTitle, self.languageSectionTitle]
 
     let numLanguageSettingRows = 1
 
@@ -82,10 +86,10 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         userDefaults.set(Array(selectedLanguages!), forKey: selectedLanguagesKey)
         userDefaults.set(searchByLanguageEnabled, forKey: searchByLanguageEnabledKey)
 
-        print("Saving User Defaults.")
+        print("\nSaving User Defaults.")
         print("\tminStars: \(minStars!)")
         print("\tselectedLanguages: \(selectedLanguages!)")
-        print("\tsearchByLanguageEnabled: \(searchByLanguageEnabled!)")
+        print("\tsearchByLanguageEnabled: \(searchByLanguageEnabled!)\n")
     }
 
     // MARK: Setup Views
@@ -262,15 +266,15 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - Target Actions
 
     @objc private func saveSettings() {
-        print("Save button tapped")
+        print("\nSave button tapped\n")
         savePreferences()
         dismiss()
     }
 
     @objc private func cancelSettings() {
-        print("Cancel button tapped")
+        print("\nCancel button tapped\n")
 
-        // Clear and reload filters from preferences
+        // Reload filters from preferences
         loadPreferences()
 
         dismiss()
@@ -320,7 +324,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             displayedLanguages.removeAll()
 
             // Remove language rows from table with animation
-            tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.top)
+            tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
             tableView.reloadData()
 
             // Set preference
@@ -341,5 +345,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         // Need to assign return value to avoid warning
         // http://stackoverflow.com/questions/37843049/xcode-8-swift-3-expression-of-type-uiviewcontroller-is-unused-warning
         _ = navigationController?.popViewController(animated: true)
+        print("\nSettings dismissed.\n")
     }
 }
