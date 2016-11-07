@@ -41,9 +41,9 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     var displayedLanguages = [String]()
 
     // User preferences
-    let searchByLanguageEnabledKey = "searchByLanguage"
-    let selectedLanguagesKey = "selectedLanguages"
-    let minStarsKey = "minStars"
+    static let searchByLanguageEnabledKey = "searchByLanguage"
+    static let selectedLanguagesKey = "selectedLanguages"
+    static let minStarsKey = "minStars"
 
     var selectedLanguages: Set<String>?
     var searchByLanguageEnabled: Bool?
@@ -69,22 +69,22 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     private func loadPreferences() {
         let userDefaults = UserDefaults.standard
 
-        minStars = userDefaults.value(forKey: minStarsKey) as? Int ?? 0
+        minStars = userDefaults.value(forKey: SettingsViewController.minStarsKey) as? Int ?? 0
 
         // Sets are not eligible for storage in UserDefaults
         let selectedLanguagesArray =
-            userDefaults.value(forKey: selectedLanguagesKey) as? [String] ?? [String]()
+            userDefaults.value(forKey: SettingsViewController.selectedLanguagesKey) as? [String] ?? [String]()
         selectedLanguages = Set(selectedLanguagesArray)
 
-        searchByLanguageEnabled = userDefaults.value(forKey: searchByLanguageEnabledKey) as? Bool ?? false
+        searchByLanguageEnabled = userDefaults.value(forKey: SettingsViewController.searchByLanguageEnabledKey) as? Bool ?? false
     }
 
     private func savePreferences() {
         let userDefaults = UserDefaults.standard
 
-        userDefaults.set(minStars, forKey: minStarsKey)
-        userDefaults.set(Array(selectedLanguages!), forKey: selectedLanguagesKey)
-        userDefaults.set(searchByLanguageEnabled, forKey: searchByLanguageEnabledKey)
+        userDefaults.set(minStars, forKey: SettingsViewController.minStarsKey)
+        userDefaults.set(Array(selectedLanguages!), forKey: SettingsViewController.selectedLanguagesKey)
+        userDefaults.set(searchByLanguageEnabled, forKey: SettingsViewController.searchByLanguageEnabledKey)
 
         print("\nSaving User Defaults.")
         print("\tminStars: \(minStars!)")
@@ -345,6 +345,5 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         // Need to assign return value to avoid warning
         // http://stackoverflow.com/questions/37843049/xcode-8-swift-3-expression-of-type-uiviewcontroller-is-unused-warning
         _ = navigationController?.popViewController(animated: true)
-        print("\nSettings dismissed.\n")
     }
 }

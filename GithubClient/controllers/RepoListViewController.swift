@@ -17,22 +17,28 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     var searchTerms = [String]()
-    var queryMap = [String: String]()
+    var rawQueryParams = [[String: String]]()
     
     var searchBar = UISearchBar()
     var settingsViewController: SettingsViewController?
     
     var repoList = [GithubRepo]()
-    
+
+    // MARK: - ViewController overrides
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupViews()
-        getRepos()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        repoList.removeAll()
+        getRepos()
     }
     
     // MARK: - Setup Views
@@ -95,7 +101,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RepoTableViewCell") as! RepoTableViewCell
+
+        cell.nameLabel.text = repoList[indexPath.row].name
+
+        return cell
     }
     
     // MARK: - UISearchBarDelegate
@@ -117,21 +127,51 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             if searchBarText.characters.count > 0 {
-                // TODO: Fetch repos by keyword
+                searchTerms = searchBarText.components(separatedBy: " ")
             }
         }
+    }
+
+    // MARK: - User filter preferences
+
+    private func loadPreferencesIntoQueryMap() {
+        rawQueryParams.removeAll()
+
+        let preferences = UserDefaults.standard
+
+        if let minStars = preferences.value(forKey: SettingsViewController.minStarsKey) as? Int {
+            rawQueryParams.append(["\(GithubClient.stars)": ">=\(minStars)"])
+        }
+
+        if let searchByLanguageEnabled = preferences.value(forKey: SettingsViewController.searchByLanguageEnabledKey) as? Bool {
+            if(searchByLanguageEnabled) {
+                if let languages = preferences.value(forKey: SettingsViewController.selectedLanguagesKey) as? [String] {
+                    for language in languages {
+                        rawQueryParams.append(
+                            [
+                                "\(GithubClient.queryParamKey)": "\(GithubClient.language)",
+                                "\(GithubClient.queryParamValue)": "\(language)",
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+
     }
     
     // MARK: - Search Repos
     
     private func getRepos() {
-        if !searchTerms.isEmpty || !queryMap.isEmpty {
-            searchRepos(searchTerms: searchTerms, queryMap: queryMap)
+        loadPreferencesIntoQueryMap()
+
+        if !searchTerms.isEmpty || !rawQueryParams.isEmpty {
+            searchRepos(searchTerms: searchTerms, rawQueryParams: rawQueryParams)
         }
     }
     
-    private func searchRepos(searchTerms: [String]?, queryMap: [String: String]?) {
-        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, queryMap: queryMap, sort: nil) {
+    private func searchRepos(searchTerms: [String]?, rawQueryParams: [[String: String]]?) {
+        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, rawQueryParams: rawQueryParams, sort: nil) {
             GithubClient.logRequest(url: url)
 
             Alamofire.request(url).responseJSON() {
@@ -145,6 +185,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                         self.repoList.append(repo)
                     }
                 }
+
+                self.tableView.reloadData()
             }
         }
     }

@@ -24,6 +24,9 @@ class GithubClient {
     // Search API query param keys
     static let stars = "stars"
     static let language = "language"
+
+    static let queryParamKey = "key"
+    static let queryParamValue = "value"
     
     // MARK: - Build Request
     
@@ -31,21 +34,29 @@ class GithubClient {
         Sample search request:
         `https://api.github.com/search/repositories?q=ios views user:kgleong language:swift language:objective-c stars:>=50`
     */
-    class func createSearchReposUrl(searchTerms: [String]?, queryMap: [String: String]?, sort: String?) -> URL? {
+    class func createSearchReposUrl(searchTerms: [String]?, rawQueryParams: [[String: String]]?, sort: String?) -> URL? {
         var queryStrings = [String]()
-        
+
+        // Add search terms
         if let searchTerms = searchTerms {
-            queryStrings.append(contentsOf: searchTerms)
+            if !searchTerms.isEmpty {
+                queryStrings.append(contentsOf: searchTerms)
+            }
         }
-        
-        if let queryMap = queryMap {
-            for (key, value) in queryMap {
+
+        // Add languages
+        if let rawQueryParams = rawQueryParams {
+            for param in rawQueryParams {
+                guard let key = param[queryParamKey], let value = param[queryParamValue] else {
+                    continue
+                }
                 queryStrings.append("\(key):\(value)")
             }
         }
         
         var queryItems = [URLQueryItem]()
-        
+
+        // Sort by
         if let sort = sort {
             queryItems.append(
                 URLQueryItem(name: sortQueryParamKey, value: sort)
