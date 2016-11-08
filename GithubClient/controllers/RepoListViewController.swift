@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import AFNetworking
 
 class RepoListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let searchBarPlaceholder = "Enter keywords"
@@ -107,7 +108,29 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RepoTableViewCell") as! RepoTableViewCell
 
-        cell.nameLabel.text = displayRepoList[indexPath.row].name
+        // Avoids index out of bounds errors when the displayed list is empty
+        guard !displayRepoList.isEmpty else {
+            return cell
+        }
+
+        let repo = displayRepoList[indexPath.row]
+
+        cell.repoNameLabel.text = repo.name
+        cell.ownerNameLabel.text = repo.ownerLoginName
+
+        if let ownerAvatarUrl = repo.avatarUrl {
+            if let imageUrl = URL(string: ownerAvatarUrl) {
+                cell.ownerAvatarImage.setImageWith(imageUrl)
+            }
+        }
+
+        if let ownerType = repo.ownerType {
+            cell.ownerTypeLabel.text = ownerType
+        }
+
+        if let starCount = repo.starCount {
+            cell.starCountLabel.text = "\(starCount)"
+        }
 
         return cell
     }

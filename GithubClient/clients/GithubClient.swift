@@ -32,7 +32,7 @@ class GithubClient {
     
     /**
         Sample search request:
-        `https://api.github.com/search/repositories?q=ios views user:kgleong language:swift language:objective-c stars:>=50`
+        `https://api.github.com/search/repositories?q=ios user:kgleong language:swift stars:<=50`
     */
     class func createSearchReposUrl(searchTerms: [String]?, rawQueryParams: [[String: String]]?, sort: String?) -> URL? {
         var queryStrings = [String]()
