@@ -115,7 +115,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - UISearchBarDelegate
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard (searchText.characters.count > 0) else {
-            refreshRepos()
+            resetDisplayedRepos()
             return
         }
 
@@ -154,7 +154,9 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.showsCancelButton = false
-        displayRepoList = repoList
+
+        resetDisplayedRepos()
+
         searchBar.endEditing(true)
     }
     
@@ -207,6 +209,13 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         repoList.removeAll()
         displayRepoList = repoList
         getRepos()
+    }
+
+    // Resets the display repo list to show all
+    // the fetched repos in the table view.
+    private func resetDisplayedRepos() {
+        displayRepoList = repoList
+        tableView.reloadData()
     }
     
     private func getRepos() {
