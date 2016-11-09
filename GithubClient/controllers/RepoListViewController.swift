@@ -59,6 +59,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
 
         automaticallyAdjustsScrollViewInsets = false
     }
@@ -129,7 +130,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         }
 
         if let starCount = repo.starCount {
-            cell.starCountLabel.text = "\(starCount)"
+            cell.starCountLabel.text = String(starCount)
+        }
+
+        if let watcherCount = repo.watcherCount {
+            cell.watcherCountLabel.text = String(watcherCount)
         }
 
         return cell

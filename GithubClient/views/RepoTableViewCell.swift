@@ -11,6 +11,8 @@ import UIKit
 class RepoTableViewCell: UITableViewCell {
     @IBOutlet weak var repoNameLabel: UILabel!
     @IBOutlet weak var starCountLabel: UILabel!
+    @IBOutlet weak var forkCountLabel: UILabel!
+    @IBOutlet weak var watcherCountLabel: UILabel!
     @IBOutlet weak var ownerNameLabel: UILabel!
     @IBOutlet weak var ownerAvatarImage: UIImageView!
     @IBOutlet weak var ownerContainer: UIView!
@@ -18,8 +20,7 @@ class RepoTableViewCell: UITableViewCell {
     @IBOutlet weak var ownerTypeLabel: UILabel!
 
     @IBOutlet weak var repoContainer: UIView!
-
-
+    @IBOutlet weak var bodyView: UIView!
 
     // Repo information
     // score = responseMap["score"] as? Double
@@ -47,6 +48,13 @@ class RepoTableViewCell: UITableViewCell {
 
     private func setupViews() {
         setupAvatarImage()
+        setupBodyView()
+    }
+
+
+    private func setupBodyView() {
+        bodyView.layer.cornerRadius = 15.0
+        bodyView.clipsToBounds = true
     }
 
     private func setupAvatarImage() {
@@ -55,7 +63,7 @@ class RepoTableViewCell: UITableViewCell {
         ownerAvatarImage.clipsToBounds = true
 
         // Image border
-        ownerAvatarImage.layer.borderWidth = 2.0
-        ownerAvatarImage.layer.borderColor = UIColor.darkGray.cgColor
+        ownerAvatarImage.layer.borderWidth = 3.0
+        ownerAvatarImage.layer.borderColor = UIColor.white.cgColor
     }
 }
