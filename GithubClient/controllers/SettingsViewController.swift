@@ -263,7 +263,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
-    // MARK: - Target Actions
+    // MARK: - IB Target Actions
 
     @objc private func saveSettings() {
         print("\nSave button tapped\n")
@@ -274,10 +274,14 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     @objc private func cancelSettings() {
         print("\nCancel button tapped\n")
 
-        // Reload filters from preferences
-        loadPreferences()
+        let notification = CustomNotificationView(frame: nil, view: view)
+        notification.displayNotification(title: "Canceled") {
+            self.dismiss()
+        }
 
-        dismiss()
+        // Reload filters from preferences
+        print("\nLoading preferences")
+        loadPreferences()
     }
 
     @objc private func onLanguageToggle(sender: UISwitch) {

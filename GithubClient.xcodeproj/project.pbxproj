@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		19A9BD9A895079632C1D05BD /* Pods_GithubClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C17B66BE53E534D96D719E /* Pods_GithubClient.framework */; };
+		9F0F81CF1DD4CD2D004A2000 /* CustomNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0F81CE1DD4CD2D004A2000 /* CustomNotificationView.swift */; };
 		9F7E5D171DCCEFC1004C510D /* SettingsLanguageToggleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5D161DCCEFC1004C510D /* SettingsLanguageToggleTableViewCell.swift */; };
 		9F7E5D191DCCF2DB004C510D /* SettingsLanguageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E5D181DCCF2DB004C510D /* SettingsLanguageTableViewCell.swift */; };
 		9FA16C9E1DCA4899003491DF /* SettingsMinStarCountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA16C9D1DCA4899003491DF /* SettingsMinStarCountTableViewCell.swift */; };
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		01C17B66BE53E534D96D719E /* Pods_GithubClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GithubClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94F24C0450A92F5177A346D9 /* Pods-GithubClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubClient.release.xcconfig"; path = "Pods/Target Support Files/Pods-GithubClient/Pods-GithubClient.release.xcconfig"; sourceTree = "<group>"; };
+		9F0F81CE1DD4CD2D004A2000 /* CustomNotificationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomNotificationView.swift; path = views/CustomNotificationView.swift; sourceTree = "<group>"; };
 		9F7E5D161DCCEFC1004C510D /* SettingsLanguageToggleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsLanguageToggleTableViewCell.swift; path = views/SettingsLanguageToggleTableViewCell.swift; sourceTree = "<group>"; };
 		9F7E5D181DCCF2DB004C510D /* SettingsLanguageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsLanguageTableViewCell.swift; path = views/SettingsLanguageTableViewCell.swift; sourceTree = "<group>"; };
 		9FA16C9D1DCA4899003491DF /* SettingsMinStarCountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsMinStarCountTableViewCell.swift; path = views/SettingsMinStarCountTableViewCell.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				9FA16C9D1DCA4899003491DF /* SettingsMinStarCountTableViewCell.swift */,
 				9F7E5D161DCCEFC1004C510D /* SettingsLanguageToggleTableViewCell.swift */,
 				9F7E5D181DCCF2DB004C510D /* SettingsLanguageTableViewCell.swift */,
+				9F0F81CE1DD4CD2D004A2000 /* CustomNotificationView.swift */,
 			);
 			name = views;
 			sourceTree = "<group>";
@@ -270,6 +273,7 @@
 				9FA16C9E1DCA4899003491DF /* SettingsMinStarCountTableViewCell.swift in Sources */,
 				9FB8AD771DC6D2800043EE11 /* AppDelegate.swift in Sources */,
 				9FB8AD971DC797700043EE11 /* GithubRepo.swift in Sources */,
+				9F0F81CF1DD4CD2D004A2000 /* CustomNotificationView.swift in Sources */,
 				9F7E5D191DCCF2DB004C510D /* SettingsLanguageTableViewCell.swift in Sources */,
 				9FB8AD8E1DC6DBD00043EE11 /* RepoTableViewCell.swift in Sources */,
 				9FB8AD941DC6FCF40043EE11 /* SettingsViewController.swift in Sources */,
