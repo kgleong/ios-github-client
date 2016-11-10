@@ -274,7 +274,8 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     @objc private func cancelSettings() {
         print("\nCancel button tapped\n")
 
-        let notification = CustomNotificationView(frame: nil, view: view)
+        let notification = CustomNotificationView(parentView: view)
+
         notification.displayNotification(title: "Canceled") {
             self.dismiss()
         }
