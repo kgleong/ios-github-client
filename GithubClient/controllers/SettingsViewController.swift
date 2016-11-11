@@ -276,7 +276,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
         let notification = CustomNotificationView(parentView: view)
 
-        notification.displayNotification(title: "Canceled kajfdlkajsdfak alksdjfladsjkf adfjaksdfjlasjdka aksdfjaklsdjf", caption: "kdjfakdfjaksj") {
+        notification.displayNotification(title: "Canceled Title", caption: "canceled caption") {
             self.dismiss()
         }
 

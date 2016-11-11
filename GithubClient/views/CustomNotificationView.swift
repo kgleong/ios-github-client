@@ -15,7 +15,7 @@ class CustomNotificationView: UIView {
     var title: String?
     var caption: String?
     var titleLabel: UILabel?
-    var captonLabel: UILabel?
+    var captionLabel: UILabel?
     var constraintList = [NSLayoutConstraint]()
 
     // MARK: - Initializers
@@ -37,24 +37,36 @@ class CustomNotificationView: UIView {
     // MARK: - UIView Callbacks
 
     override func didMoveToSuperview() {
+        // self constraints
         constraintList.append(
             NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: superview, attribute: .centerX, multiplier: 1, constant: 0))
 
         constraintList.append(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: superview, attribute: .centerY, multiplier: 1, constant: 0))
 
-        // Dynamically size with content
         constraintList.append(NSLayoutConstraint(item: self, attribute: .height, relatedBy: .lessThanOrEqual, toItem: parentView, attribute: .height, multiplier: 0.5, constant: 0))
 
         constraintList.append(NSLayoutConstraint(item: self, attribute: .width, relatedBy: .lessThanOrEqual, toItem: parentView, attribute: .width, multiplier: 0.5, constant: 0))
 
+        // title label constraints
         if let titleLabel = titleLabel {
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .width, relatedBy: NSLayoutRelation.lessThanOrEqual, toItem: self, attribute: .width, multiplier: 1, constant: -20))
+            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: NSLayoutRelation.lessThanOrEqual, toItem: self, attribute: .height, multiplier: 1, constant: -20))
+            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 0))
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0))
+            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0))
+            if let captionLabel = captionLabel {
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
+
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 0))
+
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .top, relatedBy: .equal, toItem: titleLabel, attribute: .bottom, multiplier: 1, constant: 10))
+
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottomMargin, multiplier: 1, constant: 0))
+            }
+            else {
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottomMargin, multiplier: 1, constant: 0))
+            }
         }
 
         NSLayoutConstraint.activate(constraintList)
@@ -73,17 +85,42 @@ class CustomNotificationView: UIView {
     }
 
     func setupLabels() {
-        guard let title = title else {
+        setupTitleLabel()
+        setupCaptionLabel()
+    }
+
+    func setupTitleLabel() {
+        guard let title = title else { return }
+
+        titleLabel = UILabel(frame: CustomNotificationView.placeholderFrame)
+
+        guard let titleLabel = titleLabel else { return }
+
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+
+        titleLabel.text = title
+
+        addSubview(titleLabel)
+    }
+
+    func setupCaptionLabel() {
+        guard let caption = caption else {
             return
         }
 
-        titleLabel = UILabel(frame: CustomNotificationView.placeholderFrame)
-        titleLabel!.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel!.numberOfLines = 0
+        captionLabel = UILabel(frame: CustomNotificationView.placeholderFrame)
 
-        titleLabel!.text = title
+        guard let captionLabel = captionLabel else { return }
 
-        addSubview(titleLabel!)
+        captionLabel.translatesAutoresizingMaskIntoConstraints = false
+        captionLabel.numberOfLines = 0
+
+        captionLabel.text = caption
+        captionLabel.textAlignment = .center
+
+        addSubview(captionLabel)
     }
 
     // MARK: - Displaying and Hiding
@@ -101,7 +138,7 @@ class CustomNotificationView: UIView {
 
         parentView.addSubview(self)
 
-        UIView.animate(withDuration: 1.5, animations: { self.alpha = 0 }) {
+        UIView.animate(withDuration: 2, animations: { self.alpha = 0 }) {
             (Bool)
             in
             onComplete()
