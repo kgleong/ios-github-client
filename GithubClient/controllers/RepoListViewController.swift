@@ -163,6 +163,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     // MARK: - UISearchBarDelegate
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard (searchText.characters.count > 0) else {
             resetDisplayedRepos()
@@ -205,22 +206,35 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         searchBar.text = nil
         searchBar.showsCancelButton = false
 
-        resetDisplayedRepos()
+        if searchTerms.isEmpty {
+            resetDisplayedRepos()
+        }
+        else {
+            refreshReposAfterSearch()
+        }
 
         searchBar.endEditing(true)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.endEditing(true)
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             if searchBarText.characters.count > 0 {
                 searchTerms = searchBarText.components(separatedBy: " ")
 
                 refreshRepos()
             }
+            else {
+                refreshReposAfterSearch()
+            }
+        }
+    }
+
+    // If a search was performed and then cleared, 
+    // refetch repos using user preferences.
+    func refreshReposAfterSearch() {
+        if !searchTerms.isEmpty {
+            searchTerms.removeAll()
+            refreshRepos()
         }
     }
 
