@@ -124,7 +124,7 @@ class CustomNotificationView: UIView {
 
     // MARK: - Displaying and Hiding
 
-    func displayNotification(title: String, caption: String?, onComplete: @escaping () -> Void) {
+    func displayNotification(title: String, caption: String?, onComplete: (() -> ())?) {
         guard let parentView = parentView else {
             print("Parent view is required.  Notification: \(title) will not be displayed")
             return
@@ -140,7 +140,7 @@ class CustomNotificationView: UIView {
         UIView.animate(withDuration: 2, animations: { self.alpha = 0 }) {
             (Bool)
             in
-            onComplete()
+            onComplete?()
         }
     }
 

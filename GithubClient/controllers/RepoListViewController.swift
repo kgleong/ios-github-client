@@ -23,6 +23,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     var searchBar = UISearchBar()
     var settingsViewController: SettingsViewController?
 
+    // Infinite Scroll
+    var currentPage = 1
+    var isFetchingRepos = false
+    var allReposFetched = false
+
     // All fetched repos
     var repoList = [GithubRepo]()
 
@@ -123,8 +128,18 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
             return cell
         }
 
-        let repo = displayRepoList[indexPath.row]
+        populateRepoCell(cell: cell, repo: displayRepoList[indexPath.row])
 
+        // Infinite scroll
+        if(indexPath.row == repoList.count - 1 && indexPath.row != 0) {
+            currentPage += 1
+            getRepos()
+        }
+
+        return cell
+    }
+
+    private func populateRepoCell(cell: RepoTableViewCell, repo: GithubRepo) {
         cell.repoNameLabel.text = repo.name
         cell.ownerNameLabel.text = repo.ownerLoginName
 
@@ -145,8 +160,6 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         if let watcherCount = repo.watcherCount {
             cell.watcherCountLabel.text = String(watcherCount)
         }
-
-        return cell
     }
     
     // MARK: - UISearchBarDelegate
@@ -243,8 +256,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - Search Repos
 
     @objc private func refreshRepos() {
+        // Clear repos
         repoList.removeAll()
         displayRepoList = repoList
+
+        // Reset current page
+        currentPage = 1
+        allReposFetched = false
+
+        // Fetch repos
         getRepos()
     }
 
@@ -256,6 +276,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func getRepos() {
+        // Don't fetch repos if currently fetching
+        guard !isFetchingRepos || !allReposFetched else {
+            return
+        }
+
         loadPreferencesIntoQueryMap()
 
         if !searchTerms.isEmpty || !rawQueryParams.isEmpty {
@@ -264,8 +289,10 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func searchRepos(searchTerms: [String]?, rawQueryParams: [[String: String]]?) {
-        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, rawQueryParams: rawQueryParams, sort: nil) {
+        if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, rawQueryParams: rawQueryParams, sort: nil, page: currentPage) {
             GithubClient.logRequest(url: url)
+
+            isFetchingRepos = true
 
             Alamofire.request(url).responseJSON() {
                 // NSHTTPURLResponse object
@@ -273,14 +300,18 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
                 // response.result.value is a [String: Any] object
                 if let itemsResponse = (response.result.value as? [String: Any])?["items"] as? [[String: Any]] {
+                    if(itemsResponse.isEmpty) {
+                        self.allReposFetched = true
+                    }
+
                     for item in itemsResponse {
                         let repo = GithubRepo(responseMap: item)
                         self.repoList.append(repo)
                     }
                 }
 
-                self.displayRepoList = self.repoList
-                self.tableView.reloadData()
+                self.isFetchingRepos = false
+                self.resetDisplayedRepos()
 
                 if self.refreshControl.isRefreshing {
                     self.refreshControl.endRefreshing()

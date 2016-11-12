@@ -20,6 +20,8 @@ class GithubClient {
 
     static let sortQueryParamKey = "sort"
     static let sortSeparator = "="
+
+    static let pageQueryParamKey = "page"
     
     // Search API query param keys
     static let stars = "stars"
@@ -34,7 +36,7 @@ class GithubClient {
         Sample search request:
         `https://api.github.com/search/repositories?q=ios user:kgleong language:swift stars:<=50`
     */
-    class func createSearchReposUrl(searchTerms: [String]?, rawQueryParams: [[String: String]]?, sort: String?) -> URL? {
+    class func createSearchReposUrl(searchTerms: [String]?, rawQueryParams: [[String: String]]?, sort: String?, page: Int) -> URL? {
         var queryStrings = [String]()
 
         // Add search terms
@@ -68,6 +70,8 @@ class GithubClient {
                 URLQueryItem(name: sortQueryParamKey, value: stars)
             )
         }
+
+        queryItems.append(URLQueryItem(name: pageQueryParamKey, value: String(page)))
         
         if queryStrings.isEmpty {
             // Default to high star count
