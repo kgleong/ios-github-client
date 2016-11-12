@@ -72,7 +72,6 @@ class CustomNotificationView: UIView {
         NSLayoutConstraint.activate(constraintList)
     }
 
-
     // MARK: - View Setup
 
     func setupViews() {

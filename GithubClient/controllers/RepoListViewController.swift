@@ -29,6 +29,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     // Repos displayed in the table view.
     var displayRepoList = [GithubRepo]()
 
+    var refreshControl = UIRefreshControl()
+
     // MARK: - ViewController overrides
 
     override func viewDidLoad() {
@@ -62,8 +64,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.separatorStyle = UITableViewCellSeparatorStyle.none
 
         automaticallyAdjustsScrollViewInsets = false
+
+        /*
+            A UIRefreshControl sends a `valueChanged` event to signal
+            when a refresh should occur.
+        */
+        refreshControl.addTarget(self, action: #selector(RepoListViewController.refreshRepos), for: .valueChanged)
+        tableView.addSubview(refreshControl)
     }
-    
+
     private func setupSearchBar() {
         searchBar.delegate = self
         searchBar.placeholder = searchBarPlaceholder
@@ -233,7 +242,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     
     // MARK: - Search Repos
 
-    private func refreshRepos() {
+    @objc private func refreshRepos() {
         repoList.removeAll()
         displayRepoList = repoList
         getRepos()
@@ -272,6 +281,10 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
                 self.displayRepoList = self.repoList
                 self.tableView.reloadData()
+
+                if self.refreshControl.isRefreshing {
+                    self.refreshControl.endRefreshing()
+                }
             }
         }
     }
