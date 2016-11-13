@@ -28,6 +28,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     var isFetchingRepos = false
     var allReposFetched = false
 
+    var loadingView: CustomNotificationView?
+
     // All fetched repos
     var repoList = [GithubRepo]()
 
@@ -58,11 +60,17 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         title = navigationTitle
         
         setupTableView()
+        setupLoadingView()
         setupSearchBar()
         setupNavigationBar()
         setupSettings()
     }
-    
+
+    private func setupLoadingView() {
+        loadingView = CustomNotificationView(parentView: self.view)
+        loadingView?.title = "Loading"
+    }
+
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -307,6 +315,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
             GithubClient.logRequest(url: url)
 
             isFetchingRepos = true
+            loadingView?.displayNotification(shouldFade: false, onComplete: nil)
 
             Alamofire.request(url).responseJSON() {
                 // NSHTTPURLResponse object
@@ -325,6 +334,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 }
 
                 self.isFetchingRepos = false
+                self.loadingView?.hideNotification()
+
                 self.resetDisplayedRepos()
 
                 if self.refreshControl.isRefreshing {

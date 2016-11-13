@@ -275,8 +275,10 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         print("\nCancel button tapped\n")
 
         let notification = CustomNotificationView(parentView: view)
+        notification.title = "Canceled"
+        notification.caption = "canceled caption"
 
-        notification.displayNotification(title: "Canceled Title", caption: "canceled caption") {
+        notification.displayNotification(shouldFade: true) {
             self.dismiss()
         }
 
