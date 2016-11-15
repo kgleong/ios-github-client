@@ -75,6 +75,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        tableView.allowsSelection = false
 
         automaticallyAdjustsScrollViewInsets = false
 
@@ -102,6 +103,9 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func setupNavigationBar() {
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+
         navigationItem.leftBarButtonItem =
             UIBarButtonItem(
                 title: SettingsViewController.navigationTitle,
@@ -109,7 +113,6 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 target: self,
                 action: #selector(RepoListViewController.displaySettings)
             )
-        
         navigationItem.titleView = searchBar
     }
     
@@ -167,6 +170,10 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
         if let watcherCount = repo.watcherCount {
             cell.watcherCountLabel.text = String(watcherCount)
+        }
+
+        if let forkCount = repo.forkCount {
+            cell.forkCountLabel.text = String(forkCount)
         }
     }
     
@@ -298,16 +305,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func getRepos() {
-        // Don't fetch repos if currently fetching
-        guard !isFetchingRepos || !allReposFetched else {
+        // Don't fetch repos if currently fetching or 
+        // if all repos have already been fetched.
+        guard !isFetchingRepos && !allReposFetched else {
             return
         }
 
         loadPreferencesIntoQueryMap()
 
-        if !searchTerms.isEmpty || !rawQueryParams.isEmpty {
-            searchRepos(searchTerms: searchTerms, rawQueryParams: rawQueryParams)
-        }
+        searchRepos(searchTerms: searchTerms, rawQueryParams: rawQueryParams)
     }
     
     private func searchRepos(searchTerms: [String]?, rawQueryParams: [[String: String]]?) {

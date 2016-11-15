@@ -19,20 +19,9 @@ class RepoTableViewCell: UITableViewCell {
     @IBOutlet weak var ownerRepoDivider: UIView!
     @IBOutlet weak var ownerTypeLabel: UILabel!
 
+    @IBOutlet weak var shadowView: UIView!
     @IBOutlet weak var repoContainer: UIView!
     @IBOutlet weak var bodyView: UIView!
-
-    // Repo information
-    // score = responseMap["score"] as? Double
-    // forkCount = responseMap["forks_count"] as? Int
-    // watcherCount = responseMap["watchers_count"] as? Int
-    // starCount = responseMap["stargazers_count"] as? Int
-    // issuesCount = responseMap["open_issues_count"] as? Int
-    // language = responseMap["language"] as? String
-
-    // avatarUrl = ownerMap["avatar_url"] as? String
-    //   ownerType = ownerMap["type"] as? String
-
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -48,13 +37,27 @@ class RepoTableViewCell: UITableViewCell {
 
     private func setupViews() {
         setupAvatarImage()
+        setupShadowView()
         setupBodyView()
+        setupOwnerViews()
     }
 
+    private func setupShadowView() {
+        shadowView.backgroundColor = UIColor.clear
+        shadowView.layer.shadowOpacity = 0.8
+        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.layer.shadowRadius = 1.5 // blur
+        shadowView.layer.shadowOffset = CGSize(width: 2, height: 2) // Spread
+    }
 
     private func setupBodyView() {
         bodyView.layer.cornerRadius = 15.0
         bodyView.clipsToBounds = true
+    }
+
+    private func setupOwnerViews() {
+        ownerNameLabel.textColor = UIColor.white
+        ownerTypeLabel.textColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.9)
     }
 
     private func setupAvatarImage() {
