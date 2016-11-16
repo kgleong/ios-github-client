@@ -17,7 +17,10 @@ iOS app that searches Github repositories by:
 * Utilizes auto-layout
 * Custom notification for **Loading** and **Canceled** modals.
 * Saves filter settings to user preferences.
-* Infinite scrolling repository list.
+* Infinite scroll on repository list.
+* Search bar allows searching by repostiory name.
+    * First searches the repository list in memory.
+    * Submitting the search makes a request to the Github API and reloads the repository list with the results.
 
 ## Specifications
 
