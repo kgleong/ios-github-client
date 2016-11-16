@@ -17,6 +17,8 @@ class CustomNotificationView: UIView {
     var titleLabel: UILabel?
     var captionLabel: UILabel?
     var constraintList = [NSLayoutConstraint]()
+    var spinner: UIImageView?
+    var showSpinner = false
 
     // MARK: - Initializers
 
@@ -43,17 +45,36 @@ class CustomNotificationView: UIView {
 
         constraintList.append(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: superview, attribute: .centerY, multiplier: 1, constant: 0))
 
-        constraintList.append(NSLayoutConstraint(item: self, attribute: .height, relatedBy: .lessThanOrEqual, toItem: parentView, attribute: .height, multiplier: 0.5, constant: 0))
+        constraintList.append(NSLayoutConstraint(item: self, attribute: .height, relatedBy: .lessThanOrEqual, toItem: superview, attribute: .height, multiplier: 0.5, constant: 0))
 
-        constraintList.append(NSLayoutConstraint(item: self, attribute: .width, relatedBy: .lessThanOrEqual, toItem: parentView, attribute: .width, multiplier: 0.5, constant: 0))
+        constraintList.append(NSLayoutConstraint(item: self, attribute: .width, relatedBy: .lessThanOrEqual, toItem: superview, attribute: .width, multiplier: 0.5, constant: 0))
+
+
+        if let spinner = spinner {
+            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0))
+
+            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 20))
+
+            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 20))
+
+            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
+        }
 
         // title label constraints
         if let titleLabel = titleLabel {
+
+            // Adjsut position if spinner is displayed
+            if let spinner = spinner {
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: spinner, attribute: .bottom, multiplier: 1, constant: 10))
+            }
+            else {
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
+            }
+
             constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
 
             constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 0))
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
 
             if let captionLabel = captionLabel {
                 constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
@@ -77,6 +98,10 @@ class CustomNotificationView: UIView {
     func setupViews() {
         setupLabels()
 
+        if showSpinner {
+            setupSpinner()
+        }
+
         self.backgroundColor = UIColor.lightGray
         self.layer.cornerRadius = 10
         self.clipsToBounds = true
@@ -86,6 +111,16 @@ class CustomNotificationView: UIView {
     func setupLabels() {
         setupTitleLabel()
         setupCaptionLabel()
+    }
+
+    func setupSpinner() {
+        spinner = UIImageView()
+        spinner?.translatesAutoresizingMaskIntoConstraints = false
+
+        if let spinner = spinner {
+            spinner.backgroundColor = UIColor.red
+            addSubview(spinner)
+        }
     }
 
     func setupTitleLabel() {

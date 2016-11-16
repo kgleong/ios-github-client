@@ -69,6 +69,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     private func setupLoadingView() {
         loadingView = CustomNotificationView(parentView: self.view)
         loadingView?.title = "Loading"
+        loadingView?.showSpinner = true
     }
 
     private func setupTableView() {
@@ -349,7 +350,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 }
 
                 self.isFetchingRepos = false
-                self.loadingView?.hideNotification()
+                //self.loadingView?.hideNotification()
 
                 self.resetDisplayedRepos()
 
