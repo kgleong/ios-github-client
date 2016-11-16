@@ -21,6 +21,8 @@ iOS app that searches Github repositories by:
 * Search bar allows searching by repostiory name.
     * First searches the repository list in memory.
     * Submitting the search makes a request to the Github API and reloads the repository list with the results.
+* Dynamic settings `UITableView`.
+    * Expands and collapses language filters via a language filter toggle.
 
 ## Specifications
 
