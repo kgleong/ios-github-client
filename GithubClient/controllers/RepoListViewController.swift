@@ -76,6 +76,11 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.dataSource = self
         tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         tableView.allowsSelection = false
+        tableView.backgroundColor = UIColor.clear
+
+        if let backgroundImage = UIImage(named: "blue-tiles") {
+            view.backgroundColor = UIColor(patternImage: backgroundImage)
+        }
 
         automaticallyAdjustsScrollViewInsets = false
 
@@ -133,6 +138,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RepoTableViewCell") as! RepoTableViewCell
+        cell.backgroundColor = UIColor.clear
 
         // Avoids index out of bounds errors when the displayed list is empty
         guard !displayRepoList.isEmpty else {
@@ -154,6 +160,9 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         cell.repoNameLabel.text = repo.name
         cell.ownerNameLabel.text = repo.ownerLoginName
 
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+
         if let ownerAvatarUrl = repo.avatarUrl {
             if let imageUrl = URL(string: ownerAvatarUrl) {
                 cell.ownerAvatarImage.setImageWith(imageUrl)
@@ -165,15 +174,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         }
 
         if let starCount = repo.starCount {
-            cell.starCountLabel.text = String(starCount)
+            cell.starCountLabel.text = numberFormatter.string(from: NSNumber(value: starCount))
         }
 
         if let watcherCount = repo.watcherCount {
-            cell.watcherCountLabel.text = String(watcherCount)
+            cell.watcherCountLabel.text = numberFormatter.string(from: NSNumber(value: watcherCount))
         }
 
         if let forkCount = repo.forkCount {
-            cell.forkCountLabel.text = String(forkCount)
+            cell.forkCountLabel.text = numberFormatter.string(from: NSNumber(value: forkCount))
         }
     }
     

@@ -44,10 +44,10 @@ class RepoTableViewCell: UITableViewCell {
 
     private func setupShadowView() {
         shadowView.backgroundColor = UIColor.clear
-        shadowView.layer.shadowOpacity = 0.8
+        shadowView.layer.shadowOpacity = 0.6
         shadowView.layer.shadowColor = UIColor.black.cgColor
-        shadowView.layer.shadowRadius = 1.5 // blur
-        shadowView.layer.shadowOffset = CGSize(width: 2, height: 2) // Spread
+        shadowView.layer.shadowRadius = 2.5 // blur
+        shadowView.layer.shadowOffset = CGSize(width: 3, height: 3) // Spread
     }
 
     private func setupBodyView() {
