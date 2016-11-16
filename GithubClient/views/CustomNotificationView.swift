@@ -139,7 +139,7 @@ class CustomNotificationView: UIView {
         self.alpha = 100
 
         if shouldFade  {
-            UIView.animate(withDuration: 2, animations: { self.alpha = 0 }) {
+            UIView.animate(withDuration: 1, animations: { self.alpha = 0 }) {
                 (Bool)
                 in
                 onComplete?()
