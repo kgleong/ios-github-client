@@ -337,27 +337,46 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 // NSHTTPURLResponse object
                 response in
 
-                // response.result.value is a [String: Any] object
-                if let itemsResponse = (response.result.value as? [String: Any])?["items"] as? [[String: Any]] {
-                    if(itemsResponse.isEmpty) {
-                        self.allReposFetched = true
+                /*
+                 response.result is an enum, with two cases, .success or .failure
+                 
+                 values can be extracted by passing in a constant ref for each expected
+                 input.
+                 
+                 E.g., .success(let value)
+                */
+                switch response.result {
+                case .success:
+                    // response.result.value is a [String: Any] object
+                    if let itemsResponse = (response.result.value as? [String: Any])?["items"] as? [[String: Any]] {
+                        if(itemsResponse.isEmpty) {
+                            self.allReposFetched = true
+                        }
+
+                        for item in itemsResponse {
+                            let repo = GithubRepo(responseMap: item)
+                            self.repoList.append(repo)
+                        }
                     }
 
-                    for item in itemsResponse {
-                        let repo = GithubRepo(responseMap: item)
-                        self.repoList.append(repo)
+                    self.isFetchingRepos = false
+                    //self.loadingView?.hideNotification()
+
+                    self.resetDisplayedRepos()
+
+                    if self.refreshControl.isRefreshing {
+                        self.refreshControl.endRefreshing()
                     }
+
+                case .failure:
+                    let alertController = UIAlertController(title: "Network error", message: "Could not fetch repositorie", preferredStyle: UIAlertControllerStyle.alert)
+
+                    alertController.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
+
+                    self.present(alertController, animated: true, completion: nil)
                 }
 
-                self.isFetchingRepos = false
-                //self.loadingView?.hideNotification()
-
-                self.resetDisplayedRepos()
-
-                if self.refreshControl.isRefreshing {
-                    self.refreshControl.endRefreshing()
-                }
-            }
+                            }
         }
     }
 }
