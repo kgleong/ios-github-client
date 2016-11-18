@@ -17,7 +17,7 @@ class CustomNotificationView: UIView {
     var titleLabel: UILabel?
     var captionLabel: UILabel?
     var constraintList = [NSLayoutConstraint]()
-    var spinner: UIImageView?
+    var spinner: UIView?
     var showSpinner = false
 
     // MARK: - Initializers
@@ -65,7 +65,7 @@ class CustomNotificationView: UIView {
 
             // Adjsut position if spinner is displayed
             if let spinner = spinner {
-                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: spinner, attribute: .bottom, multiplier: 1, constant: 10))
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: spinner, attribute: .bottom, multiplier: 1, constant: 5))
             }
             else {
                 constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
@@ -114,13 +114,18 @@ class CustomNotificationView: UIView {
     }
 
     func setupSpinner() {
-        spinner = UIImageView()
+        spinner = UIView()
         spinner?.translatesAutoresizingMaskIntoConstraints = false
 
-        if let spinner = spinner {
-            spinner.backgroundColor = UIColor.red
-            addSubview(spinner)
-        }
+        guard let spinner = spinner else { return }
+
+        spinner.backgroundColor = UIColor.red
+        spinner.layer.borderColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 0.95).cgColor
+        spinner.layer.borderWidth = 2
+        spinner.layer.cornerRadius = 5
+        spinner.layer.masksToBounds = true
+
+        addSubview(spinner)
     }
 
     func setupTitleLabel() {
@@ -172,6 +177,43 @@ class CustomNotificationView: UIView {
 
         parentView.bringSubview(toFront: self)
         self.alpha = 100
+
+        if let spinner = spinner {
+            let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
+            rotationAnimation.fromValue = 0.0
+            rotationAnimation.toValue = CGFloat(M_PI * 2)
+            rotationAnimation.beginTime = 0.0
+            rotationAnimation.duration = 2.0
+
+            let basicColorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+            basicColorAnimation.fromValue = UIColor.red
+            basicColorAnimation.toValue = UIColor.blue
+            basicColorAnimation.beginTime = 0.0
+            basicColorAnimation.duration = 2.0
+
+
+            let animationGroup = CAAnimationGroup()
+            animationGroup.animations = [rotationAnimation, basicColorAnimation]
+            animationGroup.repeatCount = Float.infinity
+            animationGroup.duration = 2.0
+
+            //spinner.layer.add(animationGroup, forKey: nil)
+
+            UIView.animateKeyframes(withDuration: 2, delay: 0, options: [.repeat, .autoreverse, .calculationModePaced], animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0) {
+                    spinner.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI * 2)/3)
+                    spinner.backgroundColor = UIColor.blue
+                }
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0) {
+                    spinner.transform = CGAffineTransform(rotationAngle: 2*CGFloat(M_PI * 2)/3)
+                    spinner.backgroundColor = UIColor.green
+                }
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0) {
+                    spinner.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI * 2))
+                    spinner.backgroundColor = UIColor.red
+                }
+            }, completion: nil)
+        }
 
         if shouldFade  {
             UIView.animate(withDuration: 1, animations: { self.alpha = 0 }) {

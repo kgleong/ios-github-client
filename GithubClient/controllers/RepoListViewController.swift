@@ -360,7 +360,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                     }
 
                     self.isFetchingRepos = false
-                    //self.loadingView?.hideNotification()
+                    self.loadingView?.hideNotification()
 
                     self.resetDisplayedRepos()
 
@@ -375,8 +375,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
                     self.present(alertController, animated: true, completion: nil)
                 }
-
-                            }
+            }
         }
     }
 }
