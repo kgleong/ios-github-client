@@ -185,6 +185,14 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         if let forkCount = repo.forkCount {
             cell.forkCountLabel.text = numberFormatter.string(from: NSNumber(value: forkCount))
         }
+
+        if let language = repo.language {
+            cell.languageLabel.text = language
+        }
+        else {
+            // Collapses the label if there's no language
+            cell.languageLabel.text = nil
+        }
     }
     
     // MARK: - UISearchBarDelegate

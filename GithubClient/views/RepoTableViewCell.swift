@@ -18,6 +18,7 @@ class RepoTableViewCell: UITableViewCell {
     @IBOutlet weak var ownerContainer: UIView!
     @IBOutlet weak var ownerRepoDivider: UIView!
     @IBOutlet weak var ownerTypeLabel: UILabel!
+    @IBOutlet weak var languageLabel: UILabel!
 
     @IBOutlet weak var shadowView: UIView!
     @IBOutlet weak var repoContainer: UIView!
