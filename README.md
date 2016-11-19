@@ -1,7 +1,5 @@
 # Github Search
 
-This is a work in progress.
-
 ## Description
 
 ![Github Search demo](/images/github-search-demo-1.gif)
