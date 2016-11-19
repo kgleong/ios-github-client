@@ -271,7 +271,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         let preferences = UserDefaults.standard
 
         if let minStars = preferences.value(forKey: SettingsViewController.minStarsKey) as? Int {
-            rawQueryParams.append(["\(GithubClient.stars)": ">=\(minStars)"])
+            rawQueryParams.append(createQueryParamMapEntry(key: GithubClient.stars, value: String(minStars)))
         }
 
         if let searchByLanguageEnabled = preferences.value(forKey: SettingsViewController.searchByLanguageEnabledKey) as? Bool {
@@ -280,10 +280,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 if let languages = preferences.value(forKey: SettingsViewController.selectedLanguagesKey) as? [String] {
                     for language in languages {
                         rawQueryParams.append(
-                            [
-                                "\(GithubClient.queryParamKey)": "\(GithubClient.language)",
-                                "\(GithubClient.queryParamValue)": "\(language)",
-                            ]
+                            createQueryParamMapEntry(key: GithubClient.language, value: language)
                         )
                     }
                 }
@@ -291,7 +288,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         }
 
     }
-    
+
+    private func createQueryParamMapEntry(key: String, value: String) -> [String: String] {
+        return
+            [
+                "\(GithubClient.queryParamKey)": "\(key)",
+                "\(GithubClient.queryParamValue)": "\(value)",
+            ]
+    }
+
     // MARK: - Search Repos
 
     @objc private func refreshRepos() {
@@ -327,6 +332,23 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func searchRepos(searchTerms: [String]?, rawQueryParams: [[String: String]]?) {
+        var logMessage = "Fetching repos with the following params:\n"
+
+        if let rawQueryParams = rawQueryParams {
+            for param in rawQueryParams {
+                guard let key = param[GithubClient.queryParamKey],
+                       let value = param[GithubClient.queryParamValue] else {
+                    continue
+                }
+                logMessage.append("\t\(key): \(value)\n")
+            }
+        }
+        else {
+            logMessage.append("\tNo params specified")
+        }
+
+        print(logMessage)
+
         if let url = GithubClient.createSearchReposUrl(searchTerms: searchTerms, rawQueryParams: rawQueryParams, sort: nil, page: currentPage) {
             GithubClient.logRequest(url: url)
 

@@ -46,13 +46,17 @@ class GithubClient {
             }
         }
 
-        // Add languages
         if let rawQueryParams = rawQueryParams {
             for param in rawQueryParams {
                 guard let key = param[queryParamKey], let value = param[queryParamValue] else {
                     continue
                 }
-                queryStrings.append("\(key):\(value)")
+                if key == GithubClient.stars {
+                    queryStrings.append("\(key):>=\(value)")
+                }
+                else {
+                    queryStrings.append("\(key):\(value)")
+                }
             }
         }
         
