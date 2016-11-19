@@ -79,6 +79,10 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.allowsSelection = false
         tableView.backgroundColor = UIColor.clear
 
+        // Make cell height dynamic
+        tableView.estimatedRowHeight = 175.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+
         if let backgroundImage = UIImage(named: "blue-tiles") {
             view.backgroundColor = UIColor(patternImage: backgroundImage)
         }
