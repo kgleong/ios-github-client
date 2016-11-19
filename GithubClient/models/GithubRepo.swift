@@ -16,6 +16,7 @@ class GithubRepo {
     var starCount: Int?
     var issuesCount: Int?
     var language: String?
+    var repoDescription: String?
 
     var avatarUrl: String?
     var ownerType: String?
@@ -31,7 +32,8 @@ class GithubRepo {
             starCount = responseMap["stargazers_count"] as? Int
             issuesCount = responseMap["open_issues_count"] as? Int
             language = responseMap["language"] as? String
-
+            repoDescription = responseMap["description"] as? String
+            
             // User information
             if let ownerMap = responseMap["owner"] as?  [String: Any] {
                 avatarUrl = ownerMap["avatar_url"] as? String

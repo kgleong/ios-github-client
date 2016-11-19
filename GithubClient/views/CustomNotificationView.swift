@@ -57,7 +57,7 @@ class CustomNotificationView: UIView {
 
             constraintList.append(NSLayoutConstraint(item: spinner, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 20))
 
-            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
+            constraintList.append(NSLayoutConstraint(item: spinner, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 10))
         }
 
         // title label constraints
@@ -65,28 +65,28 @@ class CustomNotificationView: UIView {
 
             // Adjsut position if spinner is displayed
             if let spinner = spinner {
-                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: spinner, attribute: .bottom, multiplier: 1, constant: 5))
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: spinner, attribute: .bottom, multiplier: 1, constant: 10))
             }
             else {
-                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0))
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 10))
             }
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
+            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 5))
 
-            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 0))
+            constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: -5))
 
 
             if let captionLabel = captionLabel {
-                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 0))
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leadingMargin, multiplier: 1, constant: 5))
 
-                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 0))
+                constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailingMargin, multiplier: 1, constant: 5))
 
                 constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .top, relatedBy: .equal, toItem: titleLabel, attribute: .bottom, multiplier: 1, constant: 10))
 
                 constraintList.append(NSLayoutConstraint(item: captionLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottomMargin, multiplier: 1, constant: 0))
             }
             else {
-                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottomMargin, multiplier: 1, constant: 0))
+                constraintList.append(NSLayoutConstraint(item: titleLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottomMargin, multiplier: 1, constant: -10))
             }
         }
 
@@ -102,7 +102,7 @@ class CustomNotificationView: UIView {
             setupSpinner()
         }
 
-        self.backgroundColor = UIColor.lightGray
+        self.backgroundColor = UIColor(red: 0.25, green: 0.25, blue: 0.40, alpha: 0.75)
         self.layer.cornerRadius = 10
         self.clipsToBounds = true
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -137,8 +137,8 @@ class CustomNotificationView: UIView {
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.numberOfLines = 0
+        titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
-
         titleLabel.text = title
 
         addSubview(titleLabel)
@@ -155,7 +155,7 @@ class CustomNotificationView: UIView {
 
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
         captionLabel.numberOfLines = 0
-
+        captionLabel.textColor = UIColor.white
         captionLabel.text = caption
         captionLabel.textAlignment = .center
 

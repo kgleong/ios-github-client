@@ -19,6 +19,7 @@ class RepoTableViewCell: UITableViewCell {
     @IBOutlet weak var ownerRepoDivider: UIView!
     @IBOutlet weak var ownerTypeLabel: UILabel!
     @IBOutlet weak var languageLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
 
     @IBOutlet weak var ownerInfoContainer: UIView!
     @IBOutlet weak var shadowView: UIView!
@@ -42,7 +43,7 @@ class RepoTableViewCell: UITableViewCell {
         setupShadowView()
         setupBodyView()
         setupOwnerViews()
-        setupConstraints()
+        setupRepoInfoViews()
     }
 
     private func setupShadowView() {
@@ -73,6 +74,8 @@ class RepoTableViewCell: UITableViewCell {
         ownerAvatarImage.layer.borderColor = UIColor.white.cgColor
     }
 
-    private func setupConstraints() {
+    private func setupRepoInfoViews() {
+        descriptionLabel.textColor = UIColor(red: 0.3, green: 0.3, blue: 0.5, alpha: 1)
+
     }
 }

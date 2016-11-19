@@ -197,6 +197,13 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
             // Collapses the label if there's no language
             cell.languageLabel.text = nil
         }
+
+        if let repoDescription = repo.repoDescription {
+            cell.descriptionLabel.text = repoDescription
+        }
+        else {
+            cell.descriptionLabel.text = nil
+        }
     }
     
     // MARK: - UISearchBarDelegate
