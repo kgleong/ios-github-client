@@ -41,6 +41,7 @@ class RepoTableViewCell: UITableViewCell {
         setupShadowView()
         setupBodyView()
         setupOwnerViews()
+        setupConstraints()
     }
 
     private func setupShadowView() {
@@ -69,5 +70,8 @@ class RepoTableViewCell: UITableViewCell {
         // Image border
         ownerAvatarImage.layer.borderWidth = 3.0
         ownerAvatarImage.layer.borderColor = UIColor.white.cgColor
+    }
+
+    private func setupConstraints() {
     }
 }
