@@ -271,6 +271,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 refreshReposAfterSearch()
             }
         }
+        searchBar.endEditing(true)
     }
 
     // If a search was performed and then cleared, 
