@@ -264,7 +264,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         searchBar.text = nil
         searchBar.showsCancelButton = false
 
-        if searchTerms.isEmpty {
+        if searchTerms.isEmpty && usersSearch.isEmpty {
             resetDisplayedRepos()
         }
         else {
@@ -279,7 +279,6 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
         if let searchBarText = searchBar.text {
             if searchBarText.characters.count > 0 {
-
                 // Categorize user searchs and keyword searches
                 for term in searchBarText.components(separatedBy: " ") {
                     do {
