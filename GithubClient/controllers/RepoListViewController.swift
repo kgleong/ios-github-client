@@ -101,6 +101,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     private func setupSearchBar() {
         searchBar.delegate = self
         searchBar.placeholder = searchBarPlaceholder
+        searchBar.autocapitalizationType = .none
 
         // Make search cursor visible (not white)
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.black
