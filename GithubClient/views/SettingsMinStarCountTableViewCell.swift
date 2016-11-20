@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol SettingsMinStartCountTableViewCellDelegate: class {
+protocol SettingsMinStarCountTableViewCellDelegate: class {
     func onMinStarCountChange(sender: SettingsMinStarCountTableViewCell)
 }
 
@@ -20,7 +20,7 @@ class SettingsMinStarCountTableViewCell: UITableViewCell {
     let descriptionText = "Min Stars"
     let maxMinStars = 5000
     
-    weak var delegate: SettingsMinStartCountTableViewCellDelegate?
+    weak var delegate: SettingsMinStarCountTableViewCellDelegate?
     
     var desiredMinStars: Int?
 

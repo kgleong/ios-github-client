@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SettingsMinStartCountTableViewCellDelegate {
+class SettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SettingsMinStarCountTableViewCellDelegate {
     public static let storyboardId = "com.orangemako.GithubClient.settingsViewController"
     public static let navigationTitle = "Filters"
 
