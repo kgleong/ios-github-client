@@ -60,8 +60,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
         title = SettingsViewController.navigationTitle
 
-        loadPreferences()
         setupViews()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        loadPreferences()
     }
 
     // MARK: - User preferences
@@ -204,7 +207,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
         // Set the toggle to the correct value based on the user preference value
         languageToggleCell.languageSwitch.setOn(searchByLanguageEnabled!, animated: false)
-        showOrHideLanguages(showLanguages: languageToggleCell.languageSwitch.isOn)
 
         return languageToggleCell
     }
@@ -278,12 +280,24 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         notification.title = "Changes Canceled"
 
         notification.displayNotification(shouldFade: true) {
+            self.loadPreferences()
+
+            /*
+            Fixes a bug where the cancel button is pressed
+            after turning language search on, and language search is
+            off in the user's saved settings.
+
+            The issue is the table view caches the rows that have been
+            added.
+             
+            Deletes the rows if they're displayed.
+            */
+            if !self.searchByLanguageEnabled! {
+                self.showOrHideLanguages(showLanguages: false)
+            }
+
             self.dismiss()
         }
-
-        // Reload filters from preferences
-        print("\nLoading preferences")
-        loadPreferences()
     }
 
     @objc private func onLanguageToggle(sender: UISwitch) {
@@ -331,10 +345,12 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
             // Remove language rows from table with animation
             tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
-            tableView.reloadData()
 
             // Set preference
             searchByLanguageEnabled = false
+        }
+        else {
+            print("foo")
         }
     }
 
