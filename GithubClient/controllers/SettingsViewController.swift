@@ -278,12 +278,24 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         notification.title = "Changes Canceled"
 
         notification.displayNotification(shouldFade: true) {
+            self.loadPreferences()
+
+            /*
+             Fixes a bug where the cancel button is pressed
+             after turning language search on, and language search is
+             off in the user's saved settings.
+
+             The issue is the table view caches the rows that have been
+             added.
+
+             Deletes the rows if they're displayed.
+             */
+            if !self.searchByLanguageEnabled! {
+                self.showOrHideLanguages(showLanguages: false)
+            }
+            
             self.dismiss()
         }
-
-        // Reload filters from preferences
-        print("\nLoading preferences")
-        loadPreferences()
     }
 
     @objc private func onLanguageToggle(sender: UISwitch) {
