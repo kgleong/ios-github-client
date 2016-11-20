@@ -18,6 +18,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     var searchTerms = [String]()
+    var usersSearch = [String]()
     var rawQueryParams = [[String: String]]()
     
     var searchBar = UISearchBar()
@@ -220,14 +221,23 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 in
                 let regex = try NSRegularExpression(pattern: "\(searchText)", options: [NSRegularExpression.Options.caseInsensitive])
 
-                guard let name = repo.name else {
-                    return false
+                var numNameMatches = 0
+                var numOwnerNameMatches = 0
+                var numDescriptionMatches = 0
+
+                if let name = repo.name {
+                    numNameMatches = regex.numberOfMatches(in: name, options: [], range: NSRange(location: 0, length: name.characters.count))
                 }
 
-                // Options: NSRegularExpression.MatchingOptions
-                let numMatches = regex.numberOfMatches(in: name, options: [], range: NSRange(location: 0, length: name.characters.count))
+                if let ownerName = repo.ownerLoginName {
+                    numOwnerNameMatches = regex.numberOfMatches(in: ownerName, options: [], range: NSRange(location: 0, length: ownerName.characters.count))
+                }
 
-                if(numMatches > 0) {
+                if let repoDescription = repo.repoDescription {
+                    numDescriptionMatches = regex.numberOfMatches(in: repoDescription, options: [], range: NSRange(location: 0, length: repoDescription.characters.count))
+                }
+
+                if(numNameMatches + numOwnerNameMatches + numDescriptionMatches > 0) {
                     return true
                 }
                 else {
@@ -261,9 +271,35 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        clearSearches()
+
         if let searchBarText = searchBar.text {
             if searchBarText.characters.count > 0 {
-                searchTerms = searchBarText.components(separatedBy: " ")
+
+                // Categorize user searchs and keyword searches
+                for term in searchBarText.components(separatedBy: " ") {
+                    do {
+                        // search for the `user:<username>` syntax
+                        let regex = try NSRegularExpression(pattern: "^user:([^\\s]+)$", options: [NSRegularExpression.Options.caseInsensitive])
+                        let results = regex.matches(in: term, options: [], range: NSRange(location: 0, length: term.characters.count))
+
+                        if results.isEmpty {
+                            searchTerms.append(term)
+                        }
+                        else {
+                            let termString = term as NSString
+
+                            for result in results {
+                                // add the first capturing group, which is the username
+                                let userName = termString.substring(with: result.rangeAt(1))
+                                usersSearch.append(userName)
+                            }
+                        }
+                    }
+                    catch {
+                        print("NSRegularExpression error: \(error)")
+                    }
+                }
 
                 refreshRepos()
             }
@@ -277,10 +313,15 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     // If a search was performed and then cleared, 
     // refetch repos using user preferences.
     func refreshReposAfterSearch() {
-        if !searchTerms.isEmpty {
-            searchTerms.removeAll()
+        if !searchTerms.isEmpty || !usersSearch.isEmpty {
+            clearSearches()
             refreshRepos()
         }
+    }
+
+    private func clearSearches() {
+        searchTerms.removeAll()
+        usersSearch.removeAll()
     }
 
     // MARK: - User filter preferences
@@ -347,8 +388,17 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         }
 
         loadPreferencesIntoQueryMap()
+        loadUsersSearchIntoQueryMap()
 
         searchRepos(searchTerms: searchTerms, rawQueryParams: rawQueryParams)
+    }
+
+    private func loadUsersSearchIntoQueryMap() {
+        if !usersSearch.isEmpty {
+            for userName in usersSearch {
+                rawQueryParams.append(createQueryParamMapEntry(key: "user", value: userName))
+            }
+        }
     }
     
     private func searchRepos(searchTerms: [String]?, rawQueryParams: [[String: String]]?) {
