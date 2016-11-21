@@ -21,6 +21,7 @@ class GithubRepo {
     var avatarUrl: String?
     var ownerType: String?
     var ownerLoginName: String?
+    var repoUrl: String?
     
     init(responseMap: [String: Any]?) {
         if let responseMap = responseMap {
@@ -33,6 +34,7 @@ class GithubRepo {
             issuesCount = responseMap["open_issues_count"] as? Int
             language = responseMap["language"] as? String
             repoDescription = responseMap["description"] as? String
+            repoUrl = responseMap["html_url"] as? String
             
             // User information
             if let ownerMap = responseMap["owner"] as?  [String: Any] {

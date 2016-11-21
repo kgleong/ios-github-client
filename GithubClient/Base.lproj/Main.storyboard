@@ -30,7 +30,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="215"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zvI-vN-uKm" id="6ZY-WU-7Pk">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="214"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="215"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8me-hn-2B2">
@@ -396,10 +396,10 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="wUy-2W-GCw" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xa9-D6-9De">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="xa9-D6-9De">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.15334257570924695" green="0.43545330679158423" blue="0.81775605366492143" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="0.15294117647058825" green="0.43529411764705883" blue="0.81960784313725488" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

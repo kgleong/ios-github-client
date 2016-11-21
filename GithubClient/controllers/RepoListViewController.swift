@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import SafariServices
+
 import Alamofire
 import AFNetworking
 
@@ -84,7 +86,6 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        tableView.allowsSelection = false
         tableView.backgroundColor = UIColor.clear
 
         // Make cell height dynamic
@@ -153,7 +154,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    // MARK: - UITableView Methods
+    // MARK: - UITableView Delegate Methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return displayRepoList.count
@@ -179,6 +180,19 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         return cell
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Open a Safari controller if a URL exists for the repostitory.
+        if let rawUrl = displayRepoList[indexPath.row].repoUrl, let url = URL(string: rawUrl) {
+            let safariController = SFSafariViewController(url: url)
+            present(safariController, animated: true, completion: nil)
+        }
+        else {
+            let noUrlNotification = CustomNotificationView(parentView: view)
+            noUrlNotification.title = "Sorry, no URL exists for this repository"
+            noUrlNotification.displayNotification(shouldFade: true, onComplete: nil)
+        }
+    }
+
     private func populateRepoCell(cell: RepoTableViewCell, repo: GithubRepo) {
         cell.repoNameLabel.text = repo.name
         cell.ownerNameLabel.text = repo.ownerLoginName
@@ -191,6 +205,8 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.ownerAvatarImage.setImageWith(imageUrl)
             }
         }
+
+        cell.selectionStyle = .none
 
         if let ownerType = repo.ownerType {
             cell.ownerTypeLabel.text = ownerType
@@ -236,7 +252,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
     func showToolTip() {
         UIView.animate(withDuration: 0.6) {
-            self.toolTipLabel.text = "Search by keyword or user.\nE.g., \"linux user:torvalds\""
+            self.toolTipLabel.text = "Search by keyword and/or user.\nE.g., \"linux user:torvalds\""
             self.toolTipTopConstraint.constant = 5
             self.toolTipBottomConstraint.constant = 7
             self.view.layoutIfNeeded()
@@ -289,6 +305,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        tableView.setContentOffset(CGPoint.zero, animated: true)
         searchBar.showsCancelButton = true
 
         showToolTip()
