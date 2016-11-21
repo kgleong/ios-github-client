@@ -16,7 +16,13 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
     let settingsSegueId = "com.orangemako.GithubClient.settingsSegue"
 
     @IBOutlet weak var tableView: UITableView!
-    
+
+    // Tool Tip
+    @IBOutlet weak var toolTipView: UIView!
+    @IBOutlet weak var toolTipLabel: UILabel!
+    @IBOutlet weak var toolTipBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var toolTipTopConstraint: NSLayoutConstraint!
+
     var searchTerms = [String]()
     var usersSearch = [String]()
     var rawQueryParams = [[String: String]]()
@@ -62,6 +68,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         
         setupTableView()
         setupLoadingView()
+        setupToolTip()
         setupSearchBar()
         setupNavigationBar()
         setupSettings()
@@ -96,6 +103,12 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         */
         refreshControl.addTarget(self, action: #selector(RepoListViewController.refreshRepos), for: .valueChanged)
         tableView.addSubview(refreshControl)
+    }
+
+    private func setupToolTip() {
+        toolTipLabel.text = nil
+        toolTipLabel.backgroundColor = toolTipView.backgroundColor
+        toolTipLabel.alpha = toolTipView.alpha
     }
 
     private func setupSearchBar() {
@@ -210,6 +223,25 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
             cell.descriptionLabel.text = nil
         }
     }
+
+    // MARK: - Search bar tool tip
+    func hideToolTip() {
+        UIView.animate(withDuration: 0.6) {
+            self.toolTipLabel.text = nil
+            self.toolTipTopConstraint.constant = 0
+            self.toolTipBottomConstraint.constant = 0
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    func showToolTip() {
+        UIView.animate(withDuration: 0.6) {
+            self.toolTipLabel.text = "Search by keyword or user.\nE.g., \"linux user:torvalds\""
+            self.toolTipTopConstraint.constant = 5
+            self.toolTipBottomConstraint.constant = 7
+            self.view.layoutIfNeeded()
+        }
+    }
     
     // MARK: - UISearchBarDelegate
 
@@ -258,6 +290,12 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
+
+        showToolTip()
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        hideToolTip()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
