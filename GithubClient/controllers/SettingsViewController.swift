@@ -204,7 +204,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
 
         // Set the toggle to the correct value based on the user preference value
         languageToggleCell.languageSwitch.setOn(searchByLanguageEnabled!, animated: false)
-        showOrHideLanguages(showLanguages: languageToggleCell.languageSwitch.isOn)
 
         return languageToggleCell
     }
@@ -280,26 +279,48 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         notification.displayNotification(shouldFade: true) {
             self.loadPreferences()
 
-            /*
-             Fixes a bug where the cancel button is pressed
-             after turning language search on, and language search is
-             off in the user's saved settings.
-
-             The issue is the table view caches the rows that have been
-             added.
-
-             Deletes the rows if they're displayed.
-             */
-            if !self.searchByLanguageEnabled! {
-                self.showOrHideLanguages(showLanguages: false)
+            if let searchByLanguageEnabled = self.searchByLanguageEnabled {
+                self.showOrHideLanguages(showLanguages: searchByLanguageEnabled)
             }
-            
+
             self.dismiss()
         }
     }
 
     @objc private func onLanguageToggle(sender: UISwitch) {
-        showOrHideLanguages(showLanguages: sender.isOn)
+        searchByLanguageEnabled = sender.isOn
+        showOrHideLanguages(showLanguages: searchByLanguageEnabled!)
+    }
+
+    private func showOrHideLanguages(showLanguages: Bool) {
+        // Create IndexPath objects for each row in the languages section.
+        var indexPaths = [IndexPath]()
+
+        guard let languagesSectionIndex = self.sectionHeaderTextList.index(of: self.languageSectionTitle) else {
+            print("Error: No language section")
+            return
+        }
+
+        // Exclude the first row, which is the language filter toggle.
+        for i in 1...self.allLanguagesArray().count {
+            indexPaths.append(IndexPath(row: i, section: languagesSectionIndex))
+        }
+
+        if showLanguages {
+            // Show languages
+            self.displayedLanguages = self.allLanguagesArray()
+
+            if self.tableView.numberOfRows(inSection: languagesSectionIndex) == self.numLanguageSettingRows {
+                self.tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+            }
+        }
+            // Only hide languages if they're visible.
+        else if(self.tableView.numberOfRows(inSection: languagesSectionIndex) > self.numLanguageSettingRows){
+            self.displayedLanguages.removeAll()
+
+            // Remove language rows from table with animation
+            self.tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+        }
     }
 
     // MARK: - Convenience methods
@@ -309,45 +330,6 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             Array(
                 defaultLanguages
             ).sorted() { (s1, s2) in s1 < s2 }
-    }
-
-    private func showOrHideLanguages(showLanguages: Bool) {
-        // Create IndexPath objects for each row in the languages section.
-        var indexPaths = [IndexPath]()
-
-        guard let languagesSectionIndex = sectionHeaderTextList.index(of: languageSectionTitle) else {
-            print("Error: No language section")
-            return
-        }
-
-        // Exclude the first row, which is the language filter toggle.
-        for i in 1...allLanguagesArray().count {
-            indexPaths.append(IndexPath(row: i, section: languagesSectionIndex))
-        }
-
-        if showLanguages {
-            // Show languages
-            displayedLanguages = allLanguagesArray()
-
-            if tableView.numberOfRows(inSection: languagesSectionIndex) == numLanguageSettingRows {
-                tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
-            }
-
-            // Set preference
-            searchByLanguageEnabled = true
-        }
-        // Only hide languages if they're visible.
-        else if(tableView.numberOfRows(inSection: languagesSectionIndex) > numLanguageSettingRows){
-            // Hide languages
-            displayedLanguages.removeAll()
-
-            // Remove language rows from table with animation
-            tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
-            tableView.reloadData()
-
-            // Set preference
-            searchByLanguageEnabled = false
-        }
     }
 
     // MARK: - SettingsMinStartCountTableViewCellDelegate
