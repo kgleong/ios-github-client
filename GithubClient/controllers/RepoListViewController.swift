@@ -89,7 +89,7 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.backgroundColor = UIColor.clear
 
         // Make cell height dynamic
-        tableView.estimatedRowHeight = 175.0
+        tableView.estimatedRowHeight = 200.0
         tableView.rowHeight = UITableViewAutomaticDimension
 
         if let backgroundImage = UIImage(named: "blue-tiles") {
@@ -252,11 +252,37 @@ class RepoListViewController: UIViewController, UITableViewDelegate, UITableView
 
     func showToolTip() {
         UIView.animate(withDuration: 0.6) {
-            self.toolTipLabel.text = "Search by keyword and/or user.\nE.g., \"linux user:torvalds\""
-            self.toolTipTopConstraint.constant = 5
-            self.toolTipBottomConstraint.constant = 7
+            self.toolTipLabel.attributedText = self.toolTipAttributedText()
+            self.toolTipTopConstraint.constant = 7
+            self.toolTipBottomConstraint.constant = 10
             self.view.layoutIfNeeded()
         }
+    }
+
+    func toolTipAttributedText() -> NSAttributedString {
+        let toolTipString = NSMutableAttributedString(string: "Search by ")// and/or user.\nE.g., \"linux user:torvalds\""
+
+        let boldAttribute = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: toolTipLabel.font.pointSize)]
+        let keywordString = NSMutableAttributedString(string: "keyword", attributes: boldAttribute)
+        let userString = NSMutableAttributedString(string: "user", attributes: boldAttribute)
+
+        let monospaceAttribute = [NSFontAttributeName: UIFont(name: "Courier-Bold", size: toolTipLabel.font.pointSize)]
+        let exampleString = NSMutableAttributedString(string: "linux user:torvalds", attributes: monospaceAttribute)
+
+
+        toolTipString.append(keywordString)
+        toolTipString.append(NSMutableAttributedString(string: " and/or "))
+        toolTipString.append(userString)
+        toolTipString.append(NSMutableAttributedString(string: ".\nExample: "))
+        toolTipString.append(exampleString)
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 5
+        paragraphStyle.alignment = .center
+
+        toolTipString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, toolTipString.length))
+
+        return toolTipString
     }
     
     // MARK: - UISearchBarDelegate
