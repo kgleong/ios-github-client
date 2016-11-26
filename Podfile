@@ -7,5 +7,4 @@ use_frameworks!
 target 'GithubClient' do
   pod 'Alamofire', '~> 4.0'
   pod 'AFNetworking', '~> 3.0'
-  pod 'MBProgressHUD', '~> 1.0.0'
 end

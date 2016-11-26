@@ -2,6 +2,8 @@
 
 ## Description
 
+Available on the [App Store](https://itunes.apple.com/us/app/omako-repo-search/id1178868631)
+
 ![Github Search demo](/images/github-search-demo-1.gif)
 
 iOS app that searches Github repositories by:
@@ -13,8 +15,10 @@ iOS app that searches Github repositories by:
 
 ## Features
 
+* Minimal use of third party libraries.
+    * `AlamoFire` and `AFNetworking` used for making network requests and remote image fetching, respectively.
+    * Custom notification for **Loading** and **Canceled** modals.
 * Utilizes auto-layout
-* Custom notification for **Loading** and **Canceled** modals.
 * Saves filter settings to user preferences.
 * Infinite scroll on repository list.
 * When a user selects a repository, a `SFSafariViewController` is presented to display the repository Github page.

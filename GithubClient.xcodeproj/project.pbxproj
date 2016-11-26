@@ -408,7 +408,7 @@
 				DEVELOPMENT_TEAM = K7J25DP2KC;
 				INFOPLIST_FILE = GithubClient/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.orangemako.GithubClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orangemako.githubsearch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -423,7 +423,7 @@
 				DEVELOPMENT_TEAM = K7J25DP2KC;
 				INFOPLIST_FILE = GithubClient/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.orangemako.GithubClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orangemako.githubsearch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
